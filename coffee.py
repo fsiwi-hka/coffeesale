@@ -57,6 +57,7 @@ class CodeWindow(QtGui.QDialog):
         self.ui=Ui_CodeWindow()
         self.ui.setupUi(self)
 
+        # Setup signals
         self.ui.pushNo1.clicked.connect(self.pushNo1)
         self.ui.pushNo2.clicked.connect(self.pushNo2)
         self.ui.pushNo3.clicked.connect(self.pushNo3)
@@ -66,10 +67,12 @@ class CodeWindow(QtGui.QDialog):
         self.ui.pushNo7.clicked.connect(self.pushNo7)
         self.ui.pushNo8.clicked.connect(self.pushNo8)
         self.ui.pushNo9.clicked.connect(self.pushNo9)
-
         self.ui.pushErase.clicked.connect(self.pushErase)
         self.ui.pushConfirm.clicked.connect(self.pushConfirm)
         self.ui.pushCancel.clicked.connect(self.pushCancel)
+
+        #
+        self.ui.lineCode.setText("")
 
     def pushNo(self, i):
         print i

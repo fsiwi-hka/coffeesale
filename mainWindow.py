@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys, time, os
+import sys, time, os, json
 from PyQt4 import QtGui, QtCore
 
 # Compiled ui classes
@@ -17,7 +17,7 @@ MAIN_INTERACTION_TIMEOUT = 5
 EURO = QtGui.QApplication.translate("", "€", None, QtGui.QApplication.UnicodeUTF8)
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, rfid):
+    def __init__(self, rfid, client):
         QtGui.QMainWindow.__init__(self)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
@@ -34,6 +34,7 @@ class MainWindow(QtGui.QMainWindow):
         # Business logic stuff
         self.lastInteraction = time.time()
 
+        self.client = client
         self.rfid = rfid
         self.card = self.rfid.readCard()
         self.lastCard = None
@@ -72,7 +73,10 @@ class MainWindow(QtGui.QMainWindow):
             price = "Club Mate a 1,50" + EURO
 
         if self.card != None:
-            cardtext = "Guthaben: " + str(self.card[0])
+            balance = self.client.makeRequest(json.dumps({'mifareid':self.card[0], 'cardid':self.card[1], 'action':'getBalance'}))
+            print balance
+            sys.exit(0)
+            cardtext = "Guthaben: " + str(balance)
 
         messagetext = cardtext
         #if price != "":

@@ -5,7 +5,11 @@ import sys, time, os
 from PyQt4 import QtGui, QtCore
 sys.path.insert(0, "RFIDIOt/")
 
+# RFIDIOt library
 import RFIDIOtconfig
+
+# HTTPS Request
+import httpsclient
 
 # Main Window logic 
 from mainWindow import *
@@ -41,8 +45,9 @@ class RFIDHelper(object):
 
 def main():
     rfid = RFIDHelper()
+    client = httpsclient.HTTPSClient("https://127.0.0.1:1443/payment_/", "server_pub.pem")
     app = QtGui.QApplication(sys.argv)
-    window=MainWindow(rfid)
+    window = MainWindow(rfid, client)
     window.show()
     sys.exit(app.exec_())
 

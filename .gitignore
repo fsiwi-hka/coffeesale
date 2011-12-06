@@ -1,4 +1,5 @@
 *.swp
 *.pyc
+*.pem
 codeUi.py
 mainUi.py

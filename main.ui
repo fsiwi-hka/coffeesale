@@ -170,6 +170,9 @@ QPushButton:on, QToolButton:on {
       <property name="text">
        <string>Bitte Karte auflegen ...</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
     </item>
    </layout>

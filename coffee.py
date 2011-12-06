@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import sys, time, os
 from PyQt4 import QtGui, QtCore
 
@@ -7,7 +10,10 @@ from codeUi import Ui_CodeWindow
 
 # Constants
 # Interaction timeout in seconds
-INTERACTION_TIMEOUT = 7
+MAIN_INTERACTION_TIMEOUT = 5
+CODE_INTERACTION_TIMEOUT = 10
+# WTF PYTHON?!
+EURO = QtGui.QApplication.translate("", "€", None, QtGui.QApplication.UnicodeUTF8)
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
@@ -21,7 +27,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushCharge.clicked.connect(self.pushChargeClicked)
 
         self.timer = QtCore.QTimer()
-        QtCore.QObject.connect(self.timer, QtCore.SIGNAL("timeout()"), self.timerUpdate)
+        QtCore.QObject.connect(self.timer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
         self.timer.start(100)
 
         # Code Window
@@ -30,22 +36,33 @@ class MainWindow(QtGui.QMainWindow):
         # Business logic stuff
         self.lastInteraction = time.time()
 
-    def timerUpdate(self):
+    def displayUpdate(self):
         t = time.time()
 
         # Reset selection if no interaction is made after specified time
-        if self.lastInteraction + INTERACTION_TIMEOUT < t:
+        if self.lastInteraction + MAIN_INTERACTION_TIMEOUT < t:
             self.lastInteraction = t
             self.ui.pushClubMate.setChecked(False)
             self.ui.pushCoffee.setChecked(False)
 
+        if self.ui.pushCoffee.isChecked():
+            self.ui.message.setText("Bitte Karte anlegen: Kaffee - 0,50" + EURO)
+        elif self.ui.pushClubMate.isChecked():
+            self.ui.message.setText("Bitte Karte anlegen: Club Mate - 1,50" + EURO)
+        else:
+            self.ui.message.setText("Bitte Karte anlegen ...")
+
     def pushMateClicked(self):
+        self.lastInteraction = time.time()
         self.ui.pushClubMate.setChecked(True)
         self.ui.pushCoffee.setChecked(False)
+        self.displayUpdate()
         
     def pushCoffeeClicked(self):
+        self.lastInteraction = time.time()
         self.ui.pushClubMate.setChecked(False)
         self.ui.pushCoffee.setChecked(True)
+        self.displayUpdate()
 
     def pushChargeClicked(self):
         self.codeWindow.show()
@@ -71,19 +88,44 @@ class CodeWindow(QtGui.QDialog):
         self.ui.pushConfirm.clicked.connect(self.pushConfirm)
         self.ui.pushCancel.clicked.connect(self.pushCancel)
 
+        self.timer = QtCore.QTimer()
+        QtCore.QObject.connect(self.timer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
+        self.timer.start(100)
+
         #
         self.ui.lineCode.setText("")
 
+        self.lastInteraction = time.time()
+
+    def show(self):
+        QtGui.QDialog.show(self)
+        self.ui.lineCode.setText("")
+        self.lastInteraction = time.time()
+
+    def displayUpdate(self):
+        t = time.time()
+
+        # If no interaction is made, close this window
+        if self.lastInteraction + CODE_INTERACTION_TIMEOUT < t:
+            self.close()
+
     def pushNo(self, i):
-        print i
+        self.lastInteraction = time.time()
+        t = self.ui.lineCode.text()
+        t.append(str(i))
+        self.ui.lineCode.setText(t)
     
     def pushErase(self):
-        print "erase"
+        self.lastInteraction = time.time()
+        t = self.ui.lineCode.text()
+        self.ui.lineCode.setText(t[:-1])
 
     def pushConfirm(self):
+        self.lastInteraction = time.time()
         self.close()
 
     def pushCancel(self):
+        self.lastInteraction = time.time()
         self.close()
     
     # Numpad logic... 

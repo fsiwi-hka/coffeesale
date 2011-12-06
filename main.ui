@@ -124,7 +124,7 @@ QPushButton:on, QToolButton:on {
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">image: url(resource/mate.jpg);</string>
+         <string notr="true">image: url(resource/mate.png);</string>
         </property>
         <property name="text">
          <string>Club Mate / 1,50€</string>
@@ -150,7 +150,7 @@ QPushButton:on, QToolButton:on {
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">image: url(resource/gold.jpg);</string>
+         <string notr="true">image: url(resource/gold.png);</string>
         </property>
         <property name="text">
          <string>Aufladen</string>

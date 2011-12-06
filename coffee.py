@@ -16,9 +16,9 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.setupUi(self)
 
         # Setup signals
-        self.ui.btCoffee.clicked.connect(self.pushCoffeeClicked)
-        self.ui.btClubMate.clicked.connect(self.pushMateClicked)
-        self.ui.btCharge.clicked.connect(self.pushChargeClicked)
+        self.ui.pushCoffee.clicked.connect(self.pushCoffeeClicked)
+        self.ui.pushClubMate.clicked.connect(self.pushMateClicked)
+        self.ui.pushCharge.clicked.connect(self.pushChargeClicked)
 
         self.timer = QtCore.QTimer()
         QtCore.QObject.connect(self.timer, QtCore.SIGNAL("timeout()"), self.timerUpdate)
@@ -36,16 +36,16 @@ class MainWindow(QtGui.QMainWindow):
         # Reset selection if no interaction is made after specified time
         if self.lastInteraction + INTERACTION_TIMEOUT < t:
             self.lastInteraction = t
-            self.ui.btClubMate.setChecked(False)
-            self.ui.btCoffee.setChecked(False)
+            self.ui.pushClubMate.setChecked(False)
+            self.ui.pushCoffee.setChecked(False)
 
     def pushMateClicked(self):
-        self.ui.btClubMate.setChecked(True)
-        self.ui.btCoffee.setChecked(False)
+        self.ui.pushClubMate.setChecked(True)
+        self.ui.pushCoffee.setChecked(False)
         
     def pushCoffeeClicked(self):
-        self.ui.btClubMate.setChecked(False)
-        self.ui.btCoffee.setChecked(True)
+        self.ui.pushClubMate.setChecked(False)
+        self.ui.pushCoffee.setChecked(True)
 
     def pushChargeClicked(self):
         self.codeWindow.show()

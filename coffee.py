@@ -32,6 +32,7 @@ class MainWindow(QtGui.QMainWindow):
 
         # Code Window
         self.codeWindow = CodeWindow()
+        self.codeWindow.setModal(True)
 
         # Business logic stuff
         self.lastInteraction = time.time()
@@ -65,6 +66,7 @@ class MainWindow(QtGui.QMainWindow):
         self.displayUpdate()
 
     def pushChargeClicked(self):
+        self.lastInteraction = 0
         self.codeWindow.show()
 
 class CodeWindow(QtGui.QDialog):

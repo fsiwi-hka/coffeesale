@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
-    <height>405</height>
+    <width>800</width>
+    <height>480</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>480</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -42,7 +48,6 @@ QPushButton, QToolButton {
 QPushButton:on, QToolButton:on {
 	border-color: #85c441;
 	background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(212, 212, 212, 255));
-
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -78,12 +83,19 @@ QPushButton:on, QToolButton:on {
        <number>5</number>
       </property>
       <item>
-       <widget class="QPushButton" name="btCoffee">
+       <widget class="QPushButton" name="pushCoffee">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
         </property>
         <property name="styleSheet">
          <string notr="true">image: url(resource/coffee.png);</string>
@@ -97,15 +109,25 @@ QPushButton:on, QToolButton:on {
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btClubMate">
+       <widget class="QPushButton" name="pushClubMate">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">image: url(resource/mate.jpg);</string>
+        </property>
         <property name="text">
-         <string>Club Mate / 0,50€</string>
+         <string>Club Mate / 1,50€</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -113,28 +135,22 @@ QPushButton:on, QToolButton:on {
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btCup">
+       <widget class="QPushButton" name="pushCharge">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="text">
-         <string>Becher / 0,50€</string>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
         </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btCharge">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="styleSheet">
+         <string notr="true">image: url(resource/gold.jpg);</string>
         </property>
         <property name="text">
          <string>Aufladen</string>
@@ -159,8 +175,6 @@ QPushButton:on, QToolButton:on {
    </layout>
   </widget>
  </widget>
- <resources>
-  <include location="coffee.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

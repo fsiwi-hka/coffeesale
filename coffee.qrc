@@ -1,8 +1,0 @@
-<RCC>
-  <qresource prefix="logo">
-    <file>resource/logo.png</file>
-  </qresource>
-  <qresource prefix="icons">
-    <file>resource/coffee.png</file>
-  </qresource>
-</RCC>

@@ -38,6 +38,7 @@ class MainWindow(QtGui.QMainWindow):
         self.rfid = rfid
         self.card = self.rfid.readCard()
         self.lastCard = None
+        self.cardbalance = None
         
         self.displayTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.displayTimer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
@@ -51,10 +52,16 @@ class MainWindow(QtGui.QMainWindow):
 
     def rfidUpdate(self):
         self.card = self.rfid.readCard()
+        if self.card == None:
+            self.cardbalance = None
 
         if self.card != self.lastCard:
             self.lastCard = self.card
+            self.cardbalance = self.client.makeRequest(json.dumps({'mifareid':self.card[0], 'cardid':self.card[1], 'action':'getBalance'}))
 
+        if self.card != None and (self.ui.pushCoffee.isChecked() or self.ui.pushClubMate.isChecked()):
+            # buy item
+            return
 
     def displayUpdate(self):
         t = time.time()
@@ -72,11 +79,10 @@ class MainWindow(QtGui.QMainWindow):
         elif self.ui.pushClubMate.isChecked():
             price = "Club Mate a 1,50" + EURO
 
-        if self.card != None:
-            balance = self.client.makeRequest(json.dumps({'mifareid':self.card[0], 'cardid':self.card[1], 'action':'getBalance'}))
-            print balance
-            sys.exit(0)
-            cardtext = "Guthaben: " + str(balance)
+        if self.card != None and self.cardbalance != None:
+            cardtext = "Guthaben: " + str(self.cardbalance['balance']) + EURO
+        elif price != "":
+            cardtext += " - " + price
 
         messagetext = cardtext
         #if price != "":

@@ -76,10 +76,10 @@ class HTTPSClient(object):
         self.url = url
         self.cert = cert
 
-    def makeRequest(self, json):
+    def makeRequest(self, req_json):
         handler = VerifiedHTTPSHandler(ca_certs = self.cert)
         #json = json.dumps({"action":"getBalance", "mifareid":"3", "cardid":"6"})
-        req = {"request":json}
+        req = {"request":req_json}
         params = urllib.urlencode(req)
         opener = urllib2.build_opener(handler)
         response = opener.open(self.url, params).read()

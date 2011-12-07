@@ -45,7 +45,7 @@ class RFIDHelper(object):
 
 def main():
     rfid = RFIDHelper()
-    client = httpsclient.HTTPSClient("https://127.0.0.1:1443/payment_/", "server_pub.pem")
+    client = httpsclient.HTTPSClient("https://127.0.0.1:1443/payment/", "server_pub.pem")
     app = QtGui.QApplication(sys.argv)
     window = MainWindow(rfid, client)
     window.show()

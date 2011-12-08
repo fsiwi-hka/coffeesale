@@ -63,6 +63,11 @@ QPushButton:on, QToolButton:on {
 QPushButton:hover {
 	border-color: #ED3636;
 	background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(212, 212, 212, 255));
+}
+
+QPushButton:pressed {
+	border-color: #85c441;
+	background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(212, 212, 212, 255));
 }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
@@ -155,7 +160,7 @@ QPushButton:on, QToolButton:on {
 }</string>
          </property>
          <property name="text">
-          <string>Bitte Code eingeben...</string>
+          <string>Bitte Tokencode eingeben ...</string>
          </property>
         </widget>
        </item>
@@ -173,22 +178,65 @@ QPushButton:on, QToolButton:on {
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="font">
-          <font>
-           <pointsize>24</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Abrechen</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="pushCancel">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>24</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Abrechen</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushConfirm">
+           <property name="minimumSize">
+            <size>
+             <width>70</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>24</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>OK</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
      <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="1" column="1">
+       <item row="1" column="2">
         <widget class="QPushButton" name="pushNo5">
          <property name="minimumSize">
           <size>
@@ -206,7 +254,7 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="0" column="2">
         <widget class="QPushButton" name="pushNo8">
          <property name="minimumSize">
           <size>
@@ -224,7 +272,7 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
+       <item row="0" column="3">
         <widget class="QPushButton" name="pushNo9">
          <property name="minimumSize">
           <size>
@@ -242,7 +290,7 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
+       <item row="1" column="3">
         <widget class="QPushButton" name="pushNo6">
          <property name="minimumSize">
           <size>
@@ -260,7 +308,7 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
+       <item row="0" column="1">
         <widget class="QPushButton" name="pushNo7">
          <property name="minimumSize">
           <size>
@@ -278,7 +326,7 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="1" column="1">
         <widget class="QPushButton" name="pushNo4">
          <property name="minimumSize">
           <size>
@@ -296,7 +344,7 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="2" column="2">
         <widget class="QPushButton" name="pushNo2">
          <property name="minimumSize">
           <size>
@@ -314,7 +362,7 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="2" column="1">
         <widget class="QPushButton" name="pushNo1">
          <property name="minimumSize">
           <size>
@@ -332,7 +380,7 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
+       <item row="2" column="3">
         <widget class="QPushButton" name="pushNo3">
          <property name="minimumSize">
           <size>
@@ -350,7 +398,7 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="3" column="1" colspan="2">
         <widget class="QPushButton" name="pushNo0">
          <property name="minimumSize">
           <size>
@@ -368,25 +416,7 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="3" column="2">
-        <widget class="QPushButton" name="pushConfirm">
-         <property name="minimumSize">
-          <size>
-           <width>70</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>24</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>OK</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
+       <item row="3" column="3">
         <widget class="QPushButton" name="pushErase">
          <property name="minimumSize">
           <size>
@@ -411,6 +441,19 @@ QPushButton:on, QToolButton:on {
       </layout>
      </item>
     </layout>
+   </item>
+   <item row="1" column="0">
+    <spacer name="verticalSpacer_5">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

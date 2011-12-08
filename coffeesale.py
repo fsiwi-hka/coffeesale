@@ -1,9 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys, time, os 
+import sys, time, os
 from PyQt4 import QtGui, QtCore
 sys.path.insert(0, "RFIDIOt/")
+sys.path.insert(0, "thirdparty/")
+
+import config
 
 # RFIDIOt library
 import RFIDIOtconfig
@@ -16,6 +19,9 @@ from mainWindow import *
 
 class RFIDHelper(object):
     def __init__(self):
+
+        cfg = config.Config(file("coffeesale.config"))
+        self.key = cfg.rfid.key
         try:
             self.card = RFIDIOtconfig.card
         except:
@@ -30,7 +36,7 @@ class RFIDHelper(object):
         try:
             cardid = int(self.card.uid[1:], 16)
             self.card.select()
-            if self.card.login(44/4, 'AA', '56389f80a5cf'):
+            if self.card.login(44/4, 'AA', self.key):
                 self.card.readMIFAREblock(44)
                 mifareid = long(self.card.ReadablePrint(self.card.ToBinary(self.card.MIFAREdata))[:-4])
             else:

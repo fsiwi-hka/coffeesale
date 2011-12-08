@@ -105,28 +105,6 @@ QPushButton:hover {
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="pushErase">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>100</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>50</pointsize>
-             <weight>50</weight>
-             <italic>false</italic>
-             <bold>false</bold>
-             <underline>false</underline>
-            </font>
-           </property>
-           <property name="text">
-            <string>←</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </item>
        <item>
@@ -178,6 +156,31 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="text">
           <string>Bitte Code eingeben...</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="font">
+          <font>
+           <pointsize>24</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Abrechen</string>
          </property>
         </widget>
        </item>
@@ -347,7 +350,25 @@ QPushButton:on, QToolButton:on {
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="3" column="1">
+        <widget class="QPushButton" name="pushNo0">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>38</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
         <widget class="QPushButton" name="pushConfirm">
          <property name="minimumSize">
           <size>
@@ -357,51 +378,35 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>10</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
+           <pointsize>24</pointsize>
           </font>
          </property>
          <property name="text">
-          <string>Bestätigen</string>
+          <string>OK</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="2">
-        <widget class="QPushButton" name="pushCancel">
+       <item row="3" column="0">
+        <widget class="QPushButton" name="pushErase">
          <property name="minimumSize">
           <size>
-           <width>70</width>
+           <width>100</width>
            <height>100</height>
           </size>
          </property>
          <property name="font">
           <font>
-           <pointsize>10</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
+           <pointsize>50</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+           <underline>false</underline>
           </font>
          </property>
          <property name="text">
-          <string>Abbrechen</string>
+          <string>←</string>
          </property>
         </widget>
-       </item>
-       <item row="3" column="1">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::MinimumExpanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </item>

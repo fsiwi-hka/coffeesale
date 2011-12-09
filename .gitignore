@@ -2,6 +2,7 @@
 *.pyc
 *.pem
 rfid.dummy
-codeUi.py
 mainUi.py
+codeUi.py
+messageUi.py
 coffeesale.config

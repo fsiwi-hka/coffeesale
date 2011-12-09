@@ -12,6 +12,9 @@ from mainUi import Ui_MainWindow
 # Code window
 from codeWindow import *
 
+# Message window
+from messageWindow import *
+
 # Interaction timeout in seconds
 MAIN_INTERACTION_TIMEOUT = 5
 
@@ -31,8 +34,10 @@ class MainWindow(QtGui.QMainWindow):
 
         # Code Window
         self.codeWindow = CodeWindow()
-        self.codeWindow.setModal(True)
-        
+       
+        # Message Window
+        self.messageWindow = MessageWindow()
+
         # Business logic stuff
         self.lastInteraction = time.time()
 
@@ -87,6 +92,18 @@ class MainWindow(QtGui.QMainWindow):
                 self.card.used = True
                 self.ui.pushClubMate.setChecked(False)
                 self.ui.pushCoffee.setChecked(False)
+
+                oldBalance = self.card.balance                
+                balance = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'getBalance'}))
+                self.card.balance = balance['balance']
+
+                message = "Item für " + str(price) + "€ gekauft\n\n"
+                message += "Altes Guthaben: " + str(self.card.balance) + "€\n\n"
+                message += "Neues Guthaben: " + str(self.card.balance) + "€"
+                message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
+
+                self.messageWindow.show(message, 3)
+
                 return
         return
 

@@ -3,10 +3,13 @@ class RFIDCard(object):
     mifareid = 0
     cardid = 0
     balance = 0
+    used = False
 
     def __init__(self, mifareid, cardid):
         self.mifareid = mifareid
         self.cardid = cardid
+        self.used = False
+        self.balance = 0
 
     def __repr__(self):
         return "<RFIDCard('%s', '%s', '%s')>" % (self.mifareid, self.cardid, self.balance)
@@ -55,7 +58,7 @@ class RFIDdummy(object):
 
             r = f.read()
             f.close()
-            if r == '1':
+            if r.startswith('0'):
                 return None
         except:
             return None

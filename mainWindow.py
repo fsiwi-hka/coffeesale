@@ -70,7 +70,6 @@ class MainWindow(QtGui.QMainWindow):
             self.lastcard = self.card
             self.card = newcard
 
-        if self.card != self.lastcard and self.card != None:
             balance = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'getBalance'}))
 
             self.card.balance = balance['balance']
@@ -81,24 +80,33 @@ class MainWindow(QtGui.QMainWindow):
         if self.card != None and self.card.used != True and (self.ui.pushCoffee.isChecked() or self.ui.pushClubMate.isChecked()):
             # buy item
 
-            price = 0
+            item = 0
             if self.ui.pushCoffee.isChecked():
-                price = 0.5
+                item = 1
             elif self.ui.pushClubMate.isChecked():
-                price = 1.5
+                item = 2
 
 
-            if price > 0:
-                self.card.used = True
+            if item > 0:
                 self.ui.pushClubMate.setChecked(False)
                 self.ui.pushCoffee.setChecked(False)
 
+                # Save old balance
                 oldBalance = self.card.balance                
+
+                buy = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'buyItem', 'item':str(item)}))
+                if buy['success'] == "False":
+                    self.messageWindow.show("Junge nicht genug geld\nSuch dir nen Job\nScheiss Hippi :3", 3)
+                    return
+
+                # Mark this card as used, you cant buy any items with this card anymore 
+                self.card.used = True
+                
                 balance = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'getBalance'}))
                 self.card.balance = balance['balance']
 
-                message = "Item für " + str(price) + "€ gekauft\n\n"
-                message += "Altes Guthaben: " + str(self.card.balance) + "€\n\n"
+                message = "Item gekauft\n\n"
+                message += "Altes Guthaben: " + str(oldBalance) + "€\n\n"
                 message += "Neues Guthaben: " + str(self.card.balance) + "€"
                 message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 

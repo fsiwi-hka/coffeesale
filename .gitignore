@@ -1,6 +1,7 @@
 *.swp
 *.pyc
 *.pem
+rfid.dummy
 codeUi.py
 mainUi.py
 coffeesale.config

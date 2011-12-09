@@ -4,6 +4,8 @@
 import sys, time, os, json
 from PyQt4 import QtGui, QtCore
 
+from RFID import *
+
 # Compiled ui classes
 from mainUi import Ui_MainWindow
 
@@ -37,7 +39,7 @@ class MainWindow(QtGui.QMainWindow):
         self.client = client
         self.rfid = rfid
         self.card = self.rfid.readCard()
-        self.lastCard = None
+        self.lastcard = None
         self.cardbalance = None
         
         self.displayTimer = QtCore.QTimer()
@@ -48,12 +50,22 @@ class MainWindow(QtGui.QMainWindow):
         self.rfidTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
         self.rfidUpdate()
-        self.rfidTimer.start(700)
+        self.rfidTimer.start(500)
 
     def rfidUpdate(self):
-        self.card = self.rfid.readCard()
+        #self.lastcard = self.card
+        newcard = self.rfid.readCard()
 
-        if self.card != self.lastCard and self.card != None:
+        if newcard == None:
+            self.lastcard = None
+            self.card = None
+            return
+
+        if not newcard.isSame(self.lastcard):
+            self.lastcard = self.card
+            self.card = newcard
+
+        if self.card != self.lastcard and self.card != None:
             balance = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'getBalance'}))
 
             self.card.balance = balance['balance']
@@ -61,7 +73,7 @@ class MainWindow(QtGui.QMainWindow):
 
             self.lastCard = self.card
 
-        if self.card != None and (self.ui.pushCoffee.isChecked() or self.ui.pushClubMate.isChecked()):
+        if self.card != None and self.card.used != True and (self.ui.pushCoffee.isChecked() or self.ui.pushClubMate.isChecked()):
             # buy item
 
             price = 0
@@ -72,6 +84,9 @@ class MainWindow(QtGui.QMainWindow):
 
 
             if price > 0:
+                self.card.used = True
+                self.ui.pushClubMate.setChecked(False)
+                self.ui.pushCoffee.setChecked(False)
                 return
         return
 
@@ -91,7 +106,7 @@ class MainWindow(QtGui.QMainWindow):
         elif self.ui.pushClubMate.isChecked():
             price = "Club Mate a 1,50" + EURO
 
-        if self.card != None:
+        if self.card != None and self.card.used != True:
             cardtext = "Guthaben: " + str(self.card.balance) + EURO
         elif price != "":
             cardtext += " - " + price

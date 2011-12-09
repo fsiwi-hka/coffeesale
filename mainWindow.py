@@ -32,11 +32,12 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.pushClubMate.clicked.connect(self.pushMateClicked)
         self.ui.pushCharge.clicked.connect(self.pushChargeClicked)
 
-        # Code Window
-        self.codeWindow = CodeWindow()
-       
         # Message Window
         self.messageWindow = MessageWindow()
+
+        # Code Window
+        self.codeWindow = CodeWindow(self.messageWindow, client, self.redeemCode)
+       
 
         # Business logic stuff
         self.lastInteraction = time.time()
@@ -114,6 +115,30 @@ class MainWindow(QtGui.QMainWindow):
 
                 return
         return
+
+    def redeemCode(self, code):
+        if self.card == None or self.card.used == True:
+            self.codeWindow.ui.message.setText("No Card?")
+            return
+
+        oldBalance = self.card.balance                
+
+        redeem = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'redeemCode', 'code':str(code)}))
+        if redeem['success'] == "False":
+            self.codeWindow.ui.message.setText("Token Falsch! :(")
+            return
+    
+        balance = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'getBalance'}))
+        self.card.balance = balance['balance']
+    
+        self.codeWindow.close()
+
+        message = "Code eingelöst\n\n"
+        message += "Altes Guthaben: " + str(oldBalance) + "€\n\n"
+        message += "Neues Guthaben: " + str(self.card.balance) + "€"
+        message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
+
+        self.messageWindow.show(message, 3)
 
     def displayUpdate(self):
         t = time.time()

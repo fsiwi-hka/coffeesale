@@ -14,13 +14,14 @@ CODE_INTERACTION_TIMEOUT = 10
 EURO = QtGui.QApplication.translate("", "€", None, QtGui.QApplication.UnicodeUTF8)
 
 class CodeWindow(QtGui.QDialog):
-    def __init__(self):
+    def __init__(self, messageWindow, client, codeCallback):
         QtGui.QDialog.__init__(self)
 
         self.ui=Ui_CodeWindow()
         self.ui.setupUi(self)
 
         # Setup signals
+        self.ui.pushNo0.clicked.connect(self.pushNo0)
         self.ui.pushNo1.clicked.connect(self.pushNo1)
         self.ui.pushNo2.clicked.connect(self.pushNo2)
         self.ui.pushNo3.clicked.connect(self.pushNo3)
@@ -38,14 +39,20 @@ class CodeWindow(QtGui.QDialog):
         QtCore.QObject.connect(self.timer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
         self.timer.start(100)
 
+        self.messageWindow = messageWindow
+        self.client = client
+        self.codeCallback = codeCallback
+
         #
         self.ui.lineCode.setText("")
+        self.ui.message.setText("Bitte Token eingeben...")
 
         self.lastInteraction = time.time()
 
-    def show(self):
+    def show(self, code = ""):
         QtGui.QDialog.show(self)
-        self.ui.lineCode.setText("")
+        self.ui.lineCode.setText(code)
+        self.ui.message.setText("Bitte Token eingeben...")
         self.lastInteraction = time.time()
 
     def displayUpdate(self):
@@ -68,13 +75,14 @@ class CodeWindow(QtGui.QDialog):
 
     def pushConfirm(self):
         self.lastInteraction = time.time()
-        self.close()
+        self.codeCallback(self.ui.lineCode.text())
 
     def pushCancel(self):
-        self.lastInteraction = time.time()
         self.close()
     
-    # Numpad logic... 
+    # Numpad logic...
+    def pushNo0(self):
+        self.pushNo(0)
     def pushNo1(self):
         self.pushNo(1)
     def pushNo2(self):

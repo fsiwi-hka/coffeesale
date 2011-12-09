@@ -162,6 +162,9 @@ QPushButton:on, QToolButton:on {
          <property name="text">
           <string>Bitte Tokencode eingeben ...</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
         </widget>
        </item>
        <item>

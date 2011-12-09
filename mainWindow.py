@@ -123,7 +123,7 @@ class MainWindow(QtGui.QMainWindow):
 
         oldBalance = self.card.balance                
 
-        redeem = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'redeemCode', 'code':str(code)}))
+        redeem = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'redeemToken', 'token':str(code)}))
         if redeem['success'] == "False":
             self.codeWindow.ui.message.setText("Token Falsch! :(")
             return

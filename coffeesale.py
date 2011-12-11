@@ -5,6 +5,10 @@ import sys, time, os
 from PyQt4 import QtGui, QtCore
 sys.path.insert(0, "RFIDIOt/")
 sys.path.insert(0, "thirdparty/")
+sys.path.insert(0, "coffeeprotocol/")
+
+# Protocol
+from coffeeprotocol import *
 
 import config
 
@@ -17,6 +21,18 @@ import httpsclient
 # Main Window logic 
 from mainWindow import *
 
+
+class ClientProtocol(object):
+    def __init__(self, client):
+        self.protocol = CoffeeProtocol()
+        self.client = client
+
+    def buildRequest(self, mifareid, cardid):
+        return self.protocol.buildRequest(mifareid, cardid)
+
+    def sendRequest(self, request):
+        return self.protocol.parseResponse(self.client.makeRequest(request.compile('private.pem')))
+
 def main():
     # Configuration
     cfg = config.Config(file("coffeesale.config"))
@@ -25,11 +41,14 @@ def main():
     # HTTPS Client
     client = httpsclient.HTTPSClient("https://127.0.0.1:1443/payment/", "server_pub.pem")
 
+    # Protocol
+    protocol = ClientProtocol(client)
+
     # Init Qt App
     app = QtGui.QApplication(sys.argv)
 
     # Init Window
-    window = MainWindow(rfid, client)
+    window = MainWindow(rfid, protocol)
     window.show()
     sys.exit(app.exec_())
 

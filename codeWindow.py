@@ -14,7 +14,7 @@ CODE_INTERACTION_TIMEOUT = 10
 EURO = QtGui.QApplication.translate("", "€", None, QtGui.QApplication.UnicodeUTF8)
 
 class CodeWindow(QtGui.QDialog):
-    def __init__(self, messageWindow, client, codeCallback):
+    def __init__(self, messageWindow, codeCallback):
         QtGui.QDialog.__init__(self)
 
         self.ui=Ui_CodeWindow()
@@ -40,7 +40,6 @@ class CodeWindow(QtGui.QDialog):
         self.timer.start(100)
 
         self.messageWindow = messageWindow
-        self.client = client
         self.codeCallback = codeCallback
 
         #

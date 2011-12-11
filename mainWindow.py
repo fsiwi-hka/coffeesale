@@ -22,7 +22,7 @@ MAIN_INTERACTION_TIMEOUT = 5
 EURO = QtGui.QApplication.translate("", "€", None, QtGui.QApplication.UnicodeUTF8)
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, rfid, client):
+    def __init__(self, rfid, protocol):
         QtGui.QMainWindow.__init__(self)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
@@ -36,13 +36,12 @@ class MainWindow(QtGui.QMainWindow):
         self.messageWindow = MessageWindow()
 
         # Code Window
-        self.codeWindow = CodeWindow(self.messageWindow, client, self.redeemCode)
-       
+        self.codeWindow = CodeWindow(self.messageWindow, self.redeemCode)
 
         # Business logic stuff
         self.lastInteraction = time.time()
 
-        self.client = client
+        self.protocol = protocol
         self.rfid = rfid
         self.card = self.rfid.readCard()
         self.lastcard = None
@@ -71,10 +70,10 @@ class MainWindow(QtGui.QMainWindow):
             self.lastcard = self.card
             self.card = newcard
 
-            balance = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'getBalance'}))
-
-            self.card.balance = balance['balance']
-            #self.cardbalance = self.client.makeRequest(json.dumps({'mifareid':self.mifareid, 'cardid':self.cardid, 'action':'getBalance'}))
+            balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
+            balanceReq.action = "getBalance"
+            balanceResp = self.protocol.sendRequest(balanceReq) 
+            self.card.balance = balanceResp.data['balance']
 
             self.lastCard = self.card
 
@@ -94,17 +93,23 @@ class MainWindow(QtGui.QMainWindow):
 
                 # Save old balance
                 oldBalance = self.card.balance                
+                
+                buyReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
+                buyReq.action = "buyItem"
+                buyReq.data['item'] = str(item)
+                buyResp = self.protocol.sendRequest(buyReq) 
 
-                buy = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'buyItem', 'item':str(item)}))
-                if buy['success'] == "False":
+                if buyResp.success == "False":
                     self.messageWindow.show("Junge nicht genug geld\nSuch dir nen Job\nScheiss Hippi :3", 3)
                     return
 
                 # Mark this card as used, you cant buy any items with this card anymore 
                 self.card.used = True
                 
-                balance = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'getBalance'}))
-                self.card.balance = balance['balance']
+                balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
+                balanceReq.action = "getBalance"
+                balanceResp = self.protocol.sendRequest(balanceReq) 
+                self.card.balance = balanceResp.data['balance']               
 
                 message = "Item gekauft\n\n"
                 message += "Altes Guthaben: " + str(oldBalance) + "€\n\n"
@@ -123,13 +128,20 @@ class MainWindow(QtGui.QMainWindow):
 
         oldBalance = self.card.balance                
 
-        redeem = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'redeemToken', 'token':str(code)}))
-        if redeem['success'] == "False":
+        redeemReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
+        redeemReq.action = "redeemToken"
+        redeemReq.data['token'] = str(code)
+        redeemResp = self.protocol.sendRequest(redeemReq) 
+
+        redeem = None #self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'redeemToken', 'token':str(code)}))
+        if redeemResp.success == "False":
             self.codeWindow.ui.message.setText("Token Falsch! :(")
             return
-    
-        balance = self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'getBalance'}))
-        self.card.balance = balance['balance']
+        
+        balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
+        balanceReq.action = "getBalance"
+        balanceResp = self.protocol.sendRequest(balanceReq) 
+        self.card.balance = balanceResp.data['balance']
     
         self.codeWindow.close()
 

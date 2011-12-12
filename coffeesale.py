@@ -36,7 +36,7 @@ class ClientProtocol(object):
 def main():
     # Configuration
     cfg = config.Config(file("coffeesale.config"))
-    rfid = RFIDdummy(cfg.rfid.key)
+    rfid = RFID(cfg.rfid.key)
 
     # HTTPS Client
     client = httpsclient.HTTPSClient("https://127.0.0.1:1443/payment/", "server_pub.pem")

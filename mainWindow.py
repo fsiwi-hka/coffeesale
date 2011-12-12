@@ -99,12 +99,12 @@ class MainWindow(QtGui.QMainWindow):
                 buyReq.data['item'] = str(item)
                 buyResp = self.protocol.sendRequest(buyReq) 
 
-                if buyResp.success == "False":
+                if buyResp.success == False:
                     self.messageWindow.show("Junge nicht genug geld\nSuch dir nen Job\nScheiss Hippi :3", 3)
                     return
 
                 # Mark this card as used, you cant buy any items with this card anymore 
-                self.card.used = True
+                #self.card.used = True
                 
                 balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
                 balanceReq.action = "getBalance"
@@ -112,11 +112,11 @@ class MainWindow(QtGui.QMainWindow):
                 self.card.balance = balanceResp.data['balance']               
 
                 message = "Item gekauft\n\n"
-                message += "Altes Guthaben: " + str(oldBalance) + "€\n\n"
-                message += "Neues Guthaben: " + str(self.card.balance) + "€"
+                message += "Altes Guthaben: %.2f€\n\n" % oldBalance
+                message += "Neues Guthaben: %.2f€\n\n" % self.card.balance
                 message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
-                self.messageWindow.show(message, 3)
+                self.messageWindow.show(message, 2)
 
                 return
         return
@@ -133,8 +133,7 @@ class MainWindow(QtGui.QMainWindow):
         redeemReq.data['token'] = str(code)
         redeemResp = self.protocol.sendRequest(redeemReq) 
 
-        redeem = None #self.client.makeRequest(json.dumps({'mifareid':self.card.mifareid, 'cardid':self.card.cardid, 'action':'redeemToken', 'token':str(code)}))
-        if redeemResp.success == "False":
+        if redeemResp.success == False:
             self.codeWindow.ui.message.setText("Token Falsch! :(")
             return
         
@@ -146,11 +145,11 @@ class MainWindow(QtGui.QMainWindow):
         self.codeWindow.close()
 
         message = "Code eingelöst\n\n"
-        message += "Altes Guthaben: " + str(oldBalance) + "€\n\n"
-        message += "Neues Guthaben: " + str(self.card.balance) + "€"
+        message += "Altes Guthaben: %.2f€\n\n" % oldBalance
+        message += "Neues Guthaben: %.2f€\n\n" % self.card.balance
         message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
-        self.messageWindow.show(message, 3)
+        self.messageWindow.show(message, 2)
 
     def displayUpdate(self):
         t = time.time()
@@ -169,7 +168,7 @@ class MainWindow(QtGui.QMainWindow):
             price = "Club Mate a 1,50" + EURO
 
         if self.card != None and self.card.used != True:
-            cardtext = "Guthaben: " + str(self.card.balance) + EURO
+            cardtext = "Guthaben: %.2f %s" % (self.card.balance, EURO) #+ str(self.card.balance) + EURO
         elif price != "":
             cardtext += " - " + price
 

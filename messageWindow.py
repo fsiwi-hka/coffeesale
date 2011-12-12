@@ -13,7 +13,7 @@ class MessageWindow(QtGui.QDialog):
 
         self.ui=Ui_MessageWindow()
         self.ui.setupUi(self)
-
+        
         self.timer = QtCore.QTimer()
         QtCore.QObject.connect(self.timer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
         self.timer.start(100)

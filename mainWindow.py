@@ -100,7 +100,7 @@ class MainWindow(QtGui.QMainWindow):
                 buyResp = self.protocol.sendRequest(buyReq) 
 
                 if buyResp.success == False:
-                    self.messageWindow.show("Junge nicht genug geld\nSuch dir nen Job\nScheiss Hippi :3", 3)
+                    self.messageWindow.show("Nicht genug Bits.", 3)
                     return
 
                 # Mark this card as used, you cant buy any items with this card anymore 
@@ -112,8 +112,8 @@ class MainWindow(QtGui.QMainWindow):
                 self.card.balance = balanceResp.data['balance']               
 
                 message = "Item gekauft\n\n"
-                message += "Altes Guthaben: %.2f€\n\n" % oldBalance
-                message += "Neues Guthaben: %.2f€\n\n" % self.card.balance
+                message += "Altes Guthaben: " + str(oldBalance) + " Bits\n\n"
+                message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
                 message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
                 self.messageWindow.show(message, 2)
@@ -145,8 +145,9 @@ class MainWindow(QtGui.QMainWindow):
         self.codeWindow.close()
 
         message = "Code eingelöst\n\n"
-        message += "Altes Guthaben: %.2f€\n\n" % oldBalance
-        message += "Neues Guthaben: %.2f€\n\n" % self.card.balance
+ 
+        message += "Altes Guthaben: " + str(oldBalance) + " Bits\n\n"
+        message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
         message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
         self.messageWindow.show(message, 2)
@@ -163,12 +164,12 @@ class MainWindow(QtGui.QMainWindow):
         cardtext = "Bitte Karte anlegen ..."
         price = ""
         if self.ui.pushCoffee.isChecked():
-            price = "Kaffee a 0,50" + EURO
+            price = "Kaffee a 5 Bits"
         elif self.ui.pushClubMate.isChecked():
-            price = "Club Mate a 1,50" + EURO
+            price = "Club Mate a 15 Bits"
 
         if self.card != None and self.card.used != True:
-            cardtext = "Guthaben: %.2f %s" % (self.card.balance, EURO) #+ str(self.card.balance) + EURO
+            cardtext = "Guthaben: " + str(self.card.balance) + " Bits" #+ str(self.card.balance) + EURO
         elif price != "":
             cardtext += " - " + price
 

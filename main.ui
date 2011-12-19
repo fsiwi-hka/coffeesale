@@ -101,7 +101,7 @@ QPushButton:on, QToolButton:on {
          <string notr="true">image: url(resource/coffee.png);</string>
         </property>
         <property name="text">
-         <string>Kaffee / 0,50€</string>
+         <string>Kaffee / 5 Bits</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -127,7 +127,7 @@ QPushButton:on, QToolButton:on {
          <string notr="true">image: url(resource/mate.png);</string>
         </property>
         <property name="text">
-         <string>Club Mate / 1,50€</string>
+         <string>Club Mate / 15 Bits</string>
         </property>
         <property name="checkable">
          <bool>true</bool>

@@ -1,0 +1,4 @@
+Needs:
+python-qt4
+python-qt4-phonon
+python-m2crypto

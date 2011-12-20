@@ -3,6 +3,7 @@
 
 import sys, time, os, json
 from PyQt4 import QtGui, QtCore
+from PyQt4.phonon import Phonon
 
 from RFID import *
 
@@ -26,6 +27,11 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
+        self.media = Phonon.MediaObject(self)
+        audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
+        Phonon.createPath(self.media, audioOutput)
+
+
 
         # Setup signals
         self.ui.pushCoffee.clicked.connect(self.pushCoffeeClicked)
@@ -143,6 +149,10 @@ class MainWindow(QtGui.QMainWindow):
         self.card.balance = balanceResp.data['balance']
     
         self.codeWindow.close()
+
+        # Plays beep
+        self.media.setCurrentSource(Phonon.MediaSource("resource/beep.wav"))
+        self.media.play()
 
         message = "Code eingelöst\n\n"
  

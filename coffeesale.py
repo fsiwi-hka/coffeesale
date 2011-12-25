@@ -23,9 +23,10 @@ from mainWindow import *
 
 
 class ClientProtocol(object):
-    def __init__(self, client):
+    def __init__(self, server_url, server_pub):
         self.protocol = CoffeeProtocol()
-        self.client = client
+        # HTTPS Client
+        self.client = httpsclient.HTTPSClient(server_url, server_pub)
 
     def buildRequest(self, mifareid, cardid):
         return self.protocol.buildRequest(mifareid, cardid)
@@ -38,11 +39,8 @@ def main():
     cfg = config.Config(file("coffeesale.config"))
     rfid = RFIDdummy(cfg.rfid.key)
 
-    # HTTPS Client
-    client = httpsclient.HTTPSClient("https://127.0.0.1:1443/payment/", "server_pub.pem")
-
     # Protocol
-    protocol = ClientProtocol(client)
+    protocol = ClientProtocol("https://127.0.0.1:1443/", "server_pub.pem")
 
     # Init Qt App
     app = QtGui.QApplication(sys.argv)

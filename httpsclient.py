@@ -72,17 +72,23 @@ class VerifiedHTTPSHandler(urllib2.HTTPSHandler):
     https_request = urllib2.HTTPSHandler.do_request_
 
 class HTTPSClient(object):
-    def __init__(self, url, cert):
-        self.url = url
+    def __init__(self, server, cert):
+        self.server_url = server
         self.cert = cert
+
+    def makeGet(self, url):
+        handler = VerifiedHTTPSHandler(ca_certs = self.cert)
+        opener = urllib2.build_opener(handler)
+        response = opener.open(self.server_url + str(url)).read()
+        opener.close()
+        return response
 
     def makeRequest(self, req_json):
         handler = VerifiedHTTPSHandler(ca_certs = self.cert)
-        #json = json.dumps({"action":"getBalance", "mifareid":"3", "cardid":"6"})
         req = {"request":req_json}
         params = urllib.urlencode(req)
         opener = urllib2.build_opener(handler)
-        response = opener.open(self.url, params).read()
+        response = opener.open(self.server_url + "payment/", params).read()
         opener.close()
         try:
             response = json.loads(response)

@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys, time, os, json
+import sys, time, os, json, urllib
+from functools import partial
 from PyQt4 import QtGui, QtCore
 from PyQt4.phonon import Phonon
 
@@ -27,19 +28,26 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
+        self.show()
+
+        # Message Window
+        self.messageWindow = MessageWindow()
+        self.messageWindow.show("Just a moment ...", 999999)
+
+        # Sound output
         self.media = Phonon.MediaObject(self)
         audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         Phonon.createPath(self.media, audioOutput)
-
-
 
         # Setup signals
         self.ui.pushCoffee.clicked.connect(self.pushCoffeeClicked)
         self.ui.pushClubMate.clicked.connect(self.pushMateClicked)
         self.ui.pushCharge.clicked.connect(self.pushChargeClicked)
-
-        # Message Window
-        self.messageWindow = MessageWindow()
+        
+        # Temporary hide all buttons
+        self.ui.pushCoffee.setVisible(False)
+        self.ui.pushClubMate.setVisible(False)
+        self.ui.pushCharge.setVisible(False)
 
         # Code Window
         self.codeWindow = CodeWindow(self.messageWindow, self.redeemCode)
@@ -52,7 +60,37 @@ class MainWindow(QtGui.QMainWindow):
         self.card = self.rfid.readCard()
         self.lastcard = None
         self.cardbalance = None
+ 
+        # add new buttons
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setWeight(75)
+        font.setBold(True)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        #sizePolicy.setHeightForWidth(self.pushCoffee.sizePolicy().hasHeightForWidth())
         
+        req = self.protocol.buildRequest(0, 0)
+        req.action = "getItems"
+        resp = self.protocol.sendRequest(req)
+
+        for item in resp.data['items']:
+            f = open("resource/items/" + str(item['id']) + ".png", "w+")
+            f.write(protocol.makeGet("resource/item/" + str(item['id'])))
+            f.close()
+
+            button = QtGui.QPushButton(self.ui.centralwidget)
+            button.setSizePolicy(sizePolicy)
+            button.setFont(font)
+            button.setStyleSheet("image: url(resource/items/" + str(item['id']) + ".png);")
+            button.setCheckable(True)
+            button.setObjectName(item['desc'])
+            button.setText(item['desc'] + " " + str(item['price']))
+            self.ui.buttonLayout.addWidget(button)
+            button.clicked.connect(partial(self.test, item['id']))
+
+        # Timer for display and rfid updates
         self.displayTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.displayTimer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
         self.displayUpdate()
@@ -62,6 +100,15 @@ class MainWindow(QtGui.QMainWindow):
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
         self.rfidUpdate()
         self.rfidTimer.start(500)
+       
+        # Close message window, we are done
+        self.messageWindow.close()
+            
+    def test(self, f):
+        print "fooo",
+        print f
+        return
+
 
     def rfidUpdate(self):
         #self.lastcard = self.card

@@ -34,6 +34,9 @@ class ClientProtocol(object):
     def sendRequest(self, request):
         return self.protocol.parseResponse(self.client.makeRequest(request.compile('private.pem')))
 
+    def makeGet(self, url):
+        return self.client.makeGet(url)
+
 def main():
     # Configuration
     cfg = config.Config(file("coffeesale.config"))

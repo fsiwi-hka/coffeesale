@@ -39,16 +39,6 @@ class MainWindow(QtGui.QMainWindow):
         audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         Phonon.createPath(self.media, audioOutput)
 
-        # Setup signals
-        self.ui.pushCoffee.clicked.connect(self.pushCoffeeClicked)
-        self.ui.pushClubMate.clicked.connect(self.pushMateClicked)
-        self.ui.pushCharge.clicked.connect(self.pushChargeClicked)
-        
-        # Temporary hide all buttons
-        self.ui.pushCoffee.setVisible(False)
-        self.ui.pushClubMate.setVisible(False)
-        self.ui.pushCharge.setVisible(False)
-
         # Code Window
         self.codeWindow = CodeWindow(self.messageWindow, self.redeemCode)
 
@@ -60,36 +50,9 @@ class MainWindow(QtGui.QMainWindow):
         self.card = self.rfid.readCard()
         self.lastcard = None
         self.cardbalance = None
+        self.buttons = {}
+        self.items = {}
  
-        # add new buttons
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setWeight(75)
-        font.setBold(True)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        #sizePolicy.setHeightForWidth(self.pushCoffee.sizePolicy().hasHeightForWidth())
-        
-        req = self.protocol.buildRequest(0, 0)
-        req.action = "getItems"
-        resp = self.protocol.sendRequest(req)
-
-        for item in resp.data['items']:
-            f = open("resource/items/" + str(item['id']) + ".png", "w+")
-            f.write(protocol.makeGet("resource/item/" + str(item['id'])))
-            f.close()
-
-            button = QtGui.QPushButton(self.ui.centralwidget)
-            button.setSizePolicy(sizePolicy)
-            button.setFont(font)
-            button.setStyleSheet("image: url(resource/items/" + str(item['id']) + ".png);")
-            button.setCheckable(True)
-            button.setObjectName(item['desc'])
-            button.setText(item['desc'] + " " + str(item['price']))
-            self.ui.buttonLayout.addWidget(button)
-            button.clicked.connect(partial(self.test, item['id']))
-
         # Timer for display and rfid updates
         self.displayTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.displayTimer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
@@ -100,15 +63,60 @@ class MainWindow(QtGui.QMainWindow):
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
         self.rfidUpdate()
         self.rfidTimer.start(500)
-       
+     
+        # Rebuild ALL the items!
+        self.rebuildItems()
+
         # Close message window, we are done
         self.messageWindow.close()
-            
-    def test(self, f):
-        print "fooo",
-        print f
-        return
+        
+    def rebuildItems(self):
+        # Remove all buttons
+        for i in range(self.ui.buttonLayout.count()): 
+            self.ui.buttonLayout.itemAt(i).widget().close()
 
+        self.buttons = {}
+        # Add new buttons
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setWeight(75)
+        font.setBold(True)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        
+        req = self.protocol.buildRequest(0, 0)
+        req.action = "getItems"
+        resp = self.protocol.sendRequest(req)
+
+        #self.items = resp.data['items']
+        for item in resp.data['items']:
+            self.items[item['id']] = item
+            f = open("resource/items/" + str(item['id']) + ".png", "w+")
+            f.write(self.protocol.makeGet("resource/item/" + str(item['id'])))
+            f.close()
+
+            button = QtGui.QPushButton(self.ui.centralwidget)
+            button.setSizePolicy(sizePolicy)
+            button.setFont(font)
+            button.setStyleSheet("image: url(resource/items/" + str(item['id']) + ".png);")
+            button.setCheckable(True)
+            button.setObjectName(item['desc'])
+            button.setText(item['desc'] + " / " + str(item['price']) + " Bits")
+            self.ui.buttonLayout.addWidget(button)
+            button.clicked.connect(partial(self.pushItemClicked, item['id']))
+            self.buttons[item['id']] = button
+
+        # Charge button...
+        button = QtGui.QPushButton(self.ui.centralwidget)
+        button.setSizePolicy(sizePolicy)
+        button.setFont(font)
+        button.setStyleSheet("image: url(resource/gold.png);")
+        button.setObjectName("Aufladen")
+        button.setText("Aufladen")
+        self.ui.buttonLayout.addWidget(button)
+        button.clicked.connect(self.pushChargeClicked)
+        #self.buttons[-1] = button
 
     def rfidUpdate(self):
         #self.lastcard = self.card
@@ -129,50 +137,43 @@ class MainWindow(QtGui.QMainWindow):
             self.card.balance = balanceResp.data['balance']
 
             self.lastCard = self.card
+        
+        item = 0
+        for i in self.buttons:
+            if self.buttons[i].isChecked():
+                item = i
 
-        if self.card != None and self.card.used != True and (self.ui.pushCoffee.isChecked() or self.ui.pushClubMate.isChecked()):
+        if self.card != None and self.card.used != True and item > 0:
             # buy item
+            for i in self.buttons:
+                self.buttons[i].setChecked(False)
 
-            item = 0
-            if self.ui.pushCoffee.isChecked():
-                item = 1
-            elif self.ui.pushClubMate.isChecked():
-                item = 2
+            # Save old balance
+            oldBalance = self.card.balance                
+            
+            buyReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
+            buyReq.action = "buyItem"
+            buyReq.data['item'] = str(item)
+            buyResp = self.protocol.sendRequest(buyReq) 
 
-
-            if item > 0:
-                self.ui.pushClubMate.setChecked(False)
-                self.ui.pushCoffee.setChecked(False)
-
-                # Save old balance
-                oldBalance = self.card.balance                
-                
-                buyReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
-                buyReq.action = "buyItem"
-                buyReq.data['item'] = str(item)
-                buyResp = self.protocol.sendRequest(buyReq) 
-
-                if buyResp.success == False:
-                    self.messageWindow.show("Nicht genug Bits.", 3)
-                    return
-
-                # Mark this card as used, you cant buy any items with this card anymore 
-                #self.card.used = True
-                
-                balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
-                balanceReq.action = "getBalance"
-                balanceResp = self.protocol.sendRequest(balanceReq) 
-                self.card.balance = balanceResp.data['balance']               
-
-                message = "Item gekauft\n\n"
-                message += "Altes Guthaben: " + str(oldBalance) + " Bits\n\n"
-                message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
-                message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
-
-                self.messageWindow.show(message, 2)
-
+            if buyResp.success == False:
+                self.messageWindow.show("Nicht genug Bits.", 3)
                 return
-        return
+
+            # Mark this card as used, you cant buy any items with this card anymore 
+            #self.card.used = True
+            
+            balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
+            balanceReq.action = "getBalance"
+            balanceResp = self.protocol.sendRequest(balanceReq) 
+            self.card.balance = balanceResp.data['balance']               
+
+            message = "Item gekauft\n\n"
+            message += "Altes Guthaben: " + str(oldBalance) + " Bits\n\n"
+            message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
+            message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
+
+            self.messageWindow.show(message, 2)
 
     def redeemCode(self, code):
         if self.card == None or self.card.used == True:
@@ -215,15 +216,15 @@ class MainWindow(QtGui.QMainWindow):
         # Reset selection if no interaction is made after specified time
         if self.lastInteraction + MAIN_INTERACTION_TIMEOUT < t and self.card == None:
             self.lastInteraction = t
-            self.ui.pushClubMate.setChecked(False)
-            self.ui.pushCoffee.setChecked(False)
+            for i in self.buttons:
+                self.buttons[i].setChecked(False)
         
         cardtext = "Bitte Karte anlegen ..."
         price = ""
-        if self.ui.pushCoffee.isChecked():
-            price = "Kaffee a 5 Bits"
-        elif self.ui.pushClubMate.isChecked():
-            price = "Club Mate a 15 Bits"
+        
+        for i in self.buttons:
+            if self.buttons[i].isChecked():
+                price = self.items[i]['desc'] + " a " + str(self.items[i]['price']) + " Bits"
 
         if self.card != None and self.card.used != True:
             cardtext = "Guthaben: " + str(self.card.balance) + " Bits" #+ str(self.card.balance) + EURO
@@ -231,22 +232,15 @@ class MainWindow(QtGui.QMainWindow):
             cardtext += " - " + price
 
         messagetext = cardtext
-        #if price != "":
-        #    messagetext += " - " + price
 
         self.ui.message.setText(messagetext)
 
-    def pushMateClicked(self):
+    def pushItemClicked(self, id):
         self.lastInteraction = time.time()
-        self.ui.pushClubMate.setChecked(True)
-        self.ui.pushCoffee.setChecked(False)
-        self.displayUpdate()
-        
-    def pushCoffeeClicked(self):
-        self.lastInteraction = time.time()
-        self.ui.pushClubMate.setChecked(False)
-        self.ui.pushCoffee.setChecked(True)
-        self.displayUpdate()
+        for i in self.buttons:
+            self.buttons[i].setChecked(False)
+
+        self.buttons[id].setChecked(True)
 
     def pushChargeClicked(self):
         self.lastInteraction = 0

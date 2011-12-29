@@ -17,6 +17,9 @@ from codeWindow import *
 # Message window
 from messageWindow import *
 
+# TOS Window
+from tosWindow import *
+
 # Interaction timeout in seconds
 MAIN_INTERACTION_TIMEOUT = 5
 
@@ -28,19 +31,21 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
-        self.show()
-
-        # Message Window
-        self.messageWindow = MessageWindow()
-        self.messageWindow.show("Just a moment ...", 999999)
+        #self.show()
 
         # Sound output
         self.media = Phonon.MediaObject(self)
         audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         Phonon.createPath(self.media, audioOutput)
 
+        # Message Window
+        self.messageWindow = MessageWindow()
+
         # Code Window
         self.codeWindow = CodeWindow(self.messageWindow, self.redeemCode)
+
+        # TOS Window
+        self.tosWindow = TosWindow(self.tosCallback)
 
         # Business logic stuff
         self.lastInteraction = time.time()
@@ -52,6 +57,12 @@ class MainWindow(QtGui.QMainWindow):
         self.cardbalance = None
         self.buttons = {}
         self.items = {}
+
+        # Rebuild ALL the items!
+        self.rebuildItems()
+
+        # Close message window, we are done
+        self.messageWindow.close()
  
         # Timer for display and rfid updates
         self.displayTimer = QtCore.QTimer()
@@ -62,14 +73,8 @@ class MainWindow(QtGui.QMainWindow):
         self.rfidTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
         self.rfidUpdate()
-        self.rfidTimer.start(500)
-     
-        # Rebuild ALL the items!
-        self.rebuildItems()
+        self.rfidTimer.start(500)       
 
-        # Close message window, we are done
-        self.messageWindow.close()
-        
     def rebuildItems(self):
         # Remove all buttons
         for i in range(self.ui.buttonLayout.count()): 
@@ -135,6 +140,9 @@ class MainWindow(QtGui.QMainWindow):
             balanceReq.action = "getBalance"
             balanceResp = self.protocol.sendRequest(balanceReq) 
             self.card.balance = balanceResp.data['balance']
+
+            if balanceResp.success:
+                self.card.valid = True
 
             self.lastCard = self.card
         
@@ -210,6 +218,11 @@ class MainWindow(QtGui.QMainWindow):
 
         self.messageWindow.show(message, 2)
 
+        # update rfid
+        self.card.valid = True
+        self.rfidUpdate()
+        
+
     def displayUpdate(self):
         t = time.time()
 
@@ -244,5 +257,13 @@ class MainWindow(QtGui.QMainWindow):
 
     def pushChargeClicked(self):
         self.lastInteraction = 0
-        self.codeWindow.show()
+        if self.card:
+            if self.card.valid:
+                self.codeWindow.show()
+            else:
+                self.tosWindow.show()
 
+    def tosCallback(self, accepted):
+        if accepted:
+            self.lastInteraction = 0
+            self.codeWindow.show()

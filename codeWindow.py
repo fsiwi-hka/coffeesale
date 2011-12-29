@@ -50,6 +50,7 @@ class CodeWindow(QtGui.QDialog):
 
     def show(self, code = ""):
         QtGui.QDialog.show(self)
+        self.setWindowState(QtCore.Qt.WindowMaximized)
         self.ui.lineCode.setText(code)
         self.ui.message.setText("Bitte Token eingeben...")
         self.lastInteraction = time.time()

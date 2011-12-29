@@ -27,6 +27,7 @@ class MessageWindow(QtGui.QDialog):
 
     def show(self, message, timeout):
         QtGui.QDialog.show(self)
+        self.setWindowState(QtCore.Qt.WindowMaximized)
         self.timeout = timeout
         self.start = time.time()
         self.ui.message.setText(message)

@@ -3,12 +3,14 @@ class RFIDCard(object):
     mifareid = 0
     cardid = 0
     balance = 0
+    valid = False
     used = False
 
     def __init__(self, mifareid = -1, cardid = -1):
         self.mifareid = mifareid
         self.cardid = cardid
         self.used = False
+        self.valid = False
         self.balance = 0
 
     def isSame(self, other):
@@ -59,30 +61,30 @@ class RFIDdummy(object):
         self.key = key
     
     def readCard(self):
-        card = 0
+        card = "0"
         try:
             f = open("rfid.dummy")
 
             r = f.read()
             f.close()
             i = r[0:1]
-            if i == 0:
+            if i == "0":
                 return None
             else:
                 card = i
         except:
             return None
 
-        if card == 0:
+        if card == "0":
             return None
     
-        if card == 1:
+        if card == "1":
             return RFIDCard(3, 6)
 
-        if card == 2:
+        if card == "2":
             return RFIDCard(4, 7)
 
-        if card == 3:
+        if card == "3":
             return RFIDCard(5, 8)
 
         return RFIDCard(3, 6)

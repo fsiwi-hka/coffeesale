@@ -76,6 +76,8 @@ class MainWindow(QtGui.QMainWindow):
         self.rfidTimer.start(500)       
 
     def rebuildItems(self):
+        self.messageWindow.show("Just a moment...", 999999)
+        print "Rebuilding items...", 
         # Remove all buttons
         for i in range(self.ui.buttonLayout.count()): 
             self.ui.buttonLayout.itemAt(i).widget().close()
@@ -122,6 +124,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.buttonLayout.addWidget(button)
         button.clicked.connect(self.pushChargeClicked)
         #self.buttons[-1] = button
+        print "done."
+        self.messageWindow.close()
 
     def rfidUpdate(self):
         #self.lastcard = self.card
@@ -176,8 +180,8 @@ class MainWindow(QtGui.QMainWindow):
             balanceResp = self.protocol.sendRequest(balanceReq) 
             self.card.balance = balanceResp.data['balance']               
 
-            message = "Item gekauft\n\n"
-            message += "Altes Guthaben: " + str(oldBalance) + " Bits\n\n"
+            message = str(self.items[item]['desc']) + " gekauft\n\n"
+            message += "Altes Guthaben: " + str(oldBalance) + " Bits\n"
             message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
             message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
@@ -225,7 +229,6 @@ class MainWindow(QtGui.QMainWindow):
 
     def displayUpdate(self):
         t = time.time()
-
         # Reset selection if no interaction is made after specified time
         if self.lastInteraction + MAIN_INTERACTION_TIMEOUT < t and self.card == None:
             self.lastInteraction = t

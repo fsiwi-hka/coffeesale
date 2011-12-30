@@ -70,11 +70,19 @@ QPushButton:pressed {
      <item>
       <widget class="QLabel" name="message">
        <property name="text">
-        <string>AGBs, Junge!
-Mehrzeilig, sogar.</string>
+        <string>§1 Der Kontostand wird in Bits geführt. Diese haben keinen reellen Gegenwert. Wir sind nicht verpflichtet Bits wieder auszubezahlen oder zu übertragen.
+
+§2 Wir übernehmen keine Haftung für eventuellen Verlust von Daten (insbesondere Guthabens).
+
+§3 Wir garantieren keine Verfügbarkeit des Bezahlsystems.
+
+§4 Das Bezahlsystem kann jederzeit eingestellt werden. Auch in diesem Fall gilt §1.</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

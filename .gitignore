@@ -1,6 +1,7 @@
 *.swp
 *.pyc
 *.pem
+certificates/*
 resource/items/*.png
 rfid.dummy
 mainUi.py

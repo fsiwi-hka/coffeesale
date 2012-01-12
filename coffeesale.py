@@ -23,8 +23,9 @@ from mainWindow import *
 
 
 class ClientProtocol(object):
-    def __init__(self, server_url, server_pub):
+    def __init__(self, server_url, server_pub, client_priv):
         self.protocol = CoffeeProtocol()
+        self.client_priv = client_priv
         # HTTPS Client
         self.client = httpsclient.HTTPSClient(server_url, server_pub)
 
@@ -32,7 +33,7 @@ class ClientProtocol(object):
         return self.protocol.buildRequest(mifareid, cardid)
 
     def sendRequest(self, request):
-        return self.protocol.parseResponse(self.client.makeRequest(request.compile('private.pem')))
+        return self.protocol.parseResponse(self.client.makeRequest(request.compile(self.client_priv)))
 
     def makeGet(self, url):
         return self.client.makeGet(url)
@@ -43,7 +44,7 @@ def main():
     rfid = RFIDdummy(cfg.rfid.key)
 
     # Protocol
-    protocol = ClientProtocol("https://127.0.0.1:1443/", "server_pub.pem")
+    protocol = ClientProtocol(cfg.client.server_url, cfg.client.server_pub, cfg.client.private_key)
 
     # Init Qt App
     app = QtGui.QApplication(sys.argv)

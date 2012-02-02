@@ -67,11 +67,13 @@ class CodeWindow(QtGui.QDialog):
         t = self.ui.lineCode.text()
         t.append(str(i))
         self.ui.lineCode.setText(t)
-    
+        self.ui.message.setText("Bitte Token eingeben...")
+
     def pushErase(self):
         self.lastInteraction = time.time()
         t = self.ui.lineCode.text()
         self.ui.lineCode.setText(t[:-1])
+        self.ui.message.setText("Bitte Token eingeben...")
 
     def pushConfirm(self):
         self.lastInteraction = time.time()

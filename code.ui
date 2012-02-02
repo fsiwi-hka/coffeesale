@@ -199,7 +199,7 @@ QPushButton:on, QToolButton:on {
             </font>
            </property>
            <property name="text">
-            <string>Abrechen</string>
+            <string>Abbrechen</string>
            </property>
           </widget>
          </item>

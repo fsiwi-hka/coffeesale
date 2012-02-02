@@ -134,6 +134,7 @@ class MainWindow(QtGui.QMainWindow):
         if newcard == None:
             self.lastcard = None
             self.card = None
+            self.messageWindow.close()
             return
 
         if not newcard.isSame(self.lastcard):
@@ -185,7 +186,7 @@ class MainWindow(QtGui.QMainWindow):
             message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
             message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
-            self.messageWindow.show(message, 2)
+            self.messageWindow.show(message, 4)
 
     def redeemCode(self, code):
         if self.card == None or self.card.used == True:
@@ -220,7 +221,7 @@ class MainWindow(QtGui.QMainWindow):
         message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
         message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
-        self.messageWindow.show(message, 2)
+        self.messageWindow.show(message, 4)
 
         # update rfid
         self.card.valid = True

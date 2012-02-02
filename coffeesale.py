@@ -41,7 +41,7 @@ class ClientProtocol(object):
 def main():
     # Configuration
     cfg = config.Config(file("coffeesale.config"))
-    rfid = RFIDdummy(cfg.rfid.key)
+    rfid = RFID(cfg.rfid.key)
 
     # Protocol
     protocol = ClientProtocol(cfg.client.server_url, cfg.client.server_pub, cfg.client.private_key)

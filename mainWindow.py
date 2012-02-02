@@ -73,7 +73,7 @@ class MainWindow(QtGui.QMainWindow):
         self.rfidTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
         self.rfidUpdate()
-        self.rfidTimer.start(500)       
+        self.rfidTimer.start(200)       
 
     def rebuildItems(self):
         self.messageWindow.show("Just a moment...", 999999)

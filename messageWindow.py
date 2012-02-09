@@ -38,3 +38,10 @@ class MessageWindow(QtGui.QDialog):
         if self.start + self.timeout < t:
             self.close()
 
+    def mousePressEvent(self, event):
+        #button = event.button()
+        self.close()
+
+    def keyPressEvent(self, e):            
+        #if e.key() == QtCore.Qt.Key_Escape:
+        self.close()

@@ -20,8 +20,12 @@ from messageWindow import *
 # TOS Window
 from tosWindow import *
 
+# Screensaver
+from screensaverWindow import *
+
 # Interaction timeout in seconds
 MAIN_INTERACTION_TIMEOUT = 5
+SCREENSAVER_TIMEOUT = 60
 
 # WTF PYTHON?!
 EURO = QtGui.QApplication.translate("", "€", None, QtGui.QApplication.UnicodeUTF8)
@@ -47,8 +51,12 @@ class MainWindow(QtGui.QMainWindow):
         # TOS Window
         self.tosWindow = TosWindow(self.tosCallback)
 
+        # Screensaver
+        self.screensaver = ScreensaverWindow()
+
         # Business logic stuff
         self.lastInteraction = time.time()
+        self.lastAction = time.time()
 
         self.protocol = protocol
         self.rfid = rfid
@@ -138,6 +146,9 @@ class MainWindow(QtGui.QMainWindow):
             return
 
         if not newcard.isSame(self.lastcard):
+            self.screensaver.close()
+            self.lastAction = time.time()
+
             self.lastcard = self.card
             self.card = newcard
 
@@ -230,6 +241,11 @@ class MainWindow(QtGui.QMainWindow):
 
     def displayUpdate(self):
         t = time.time()
+
+        if self.lastAction + SCREENSAVER_TIMEOUT < t:
+            self.lastAction = t
+            self.screensaver.show()
+
         # Reset selection if no interaction is made after specified time
         if self.lastInteraction + MAIN_INTERACTION_TIMEOUT < t and self.card == None:
             self.lastInteraction = t

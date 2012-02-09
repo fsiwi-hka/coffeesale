@@ -20,7 +20,7 @@ class MessageWindow(QtGui.QDialog):
 
         self.timeout = 5
         self.start = time.time()
-
+        self.setModal(True)
         self.ui.message.setText("")
 
         self.start = time.time()

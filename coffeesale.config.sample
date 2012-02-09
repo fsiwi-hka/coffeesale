@@ -3,6 +3,8 @@ client:
     server_url: 'https://127.0.0.1:1443/'
     server_pub: 'certificates/server_pub.pem'
     private_key: 'certificates/private.pem'
+    hide_cursor: False
+    use_rfid_dummy: True
 }
 rfid:
 {

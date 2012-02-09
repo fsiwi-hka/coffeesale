@@ -41,7 +41,11 @@ class ClientProtocol(object):
 def main():
     # Configuration
     cfg = config.Config(file("coffeesale.config"))
-    rfid = RFID(cfg.rfid.key)
+
+    if not cfg.client.use_rfid_dummy:
+        rfid = RFID(cfg.rfid.key)
+    else:
+        rfid = RFIDdummy(cfg.rfid.key)
 
     # Protocol
     protocol = ClientProtocol(cfg.client.server_url, cfg.client.server_pub, cfg.client.private_key)
@@ -49,7 +53,8 @@ def main():
     # Init Qt App
     app = QtGui.QApplication(sys.argv)
 
-    app.setOverrideCursor(QtGui.QCursor(10));
+    if cfg.client.hide_cursor:
+        app.setOverrideCursor(QtGui.QCursor(10));
 
     # Init Window
     window = MainWindow(rfid, protocol)

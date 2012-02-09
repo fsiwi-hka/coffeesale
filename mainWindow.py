@@ -68,12 +68,12 @@ class MainWindow(QtGui.QMainWindow):
         self.displayTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.displayTimer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
         self.displayUpdate()
-        self.displayTimer.start(100)
+        self.displayTimer.start(50)
 
         self.rfidTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
         self.rfidUpdate()
-        self.rfidTimer.start(200)       
+        self.rfidTimer.start(300)       
 
     def rebuildItems(self):
         self.messageWindow.show("Just a moment...", 999999)
@@ -271,3 +271,7 @@ class MainWindow(QtGui.QMainWindow):
         if accepted:
             self.lastInteraction = 0
             self.codeWindow.show()
+
+    def keyPressEvent(self, e):            
+        if e.key() == QtCore.Qt.Key_Escape:
+            self.close()

@@ -244,7 +244,7 @@ class MainWindow(QtGui.QMainWindow):
                 price = self.items[i]['desc'] + " a " + str(self.items[i]['price']) + " Bits"
 
         if self.card != None and self.card.used != True:
-            cardtext = "Guthaben: " + str(self.card.balance) + " Bits" #+ str(self.card.balance) + EURO
+            cardtext = "Guthaben: " + str(self.card.balance) + " Bits"
         elif price != "":
             cardtext += " - " + price
 

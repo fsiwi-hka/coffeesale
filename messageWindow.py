@@ -23,11 +23,28 @@ class MessageWindow(QtGui.QDialog):
         self.setModal(True)
         self.ui.message.setText("")
 
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
+
         self.start = time.time()
+
+    def resizeEvent(self, event):
+        circleSize = 70
+        offset = circleSize / 2
+
+        mask = QtGui.QRegion(0, offset, self.width(), self.height()-offset*2, QtGui.QRegion.Rectangle)
+        mask = mask.unite(QtGui.QRegion(offset, 0, self.width()-offset*2, self.height(), QtGui.QRegion.Rectangle))
+
+        mask = mask.unite(QtGui.QRegion(0, 0, circleSize, circleSize, QtGui.QRegion.Ellipse))
+        mask = mask.unite(QtGui.QRegion(self.width()-circleSize, 0, circleSize, circleSize, QtGui.QRegion.Ellipse))
+        mask = mask.unite(QtGui.QRegion(0, self.height()-circleSize, circleSize, circleSize, QtGui.QRegion.Ellipse))
+        mask = mask.unite(QtGui.QRegion(self.width()-circleSize, self.height()-circleSize, circleSize, circleSize, QtGui.QRegion.Ellipse))
+
+        self.setMask(mask)
+        return
 
     def show(self, message, timeout):
         QtGui.QDialog.show(self)
-        self.setWindowState(QtCore.Qt.WindowMaximized)
+        #self.setWindowState(QtCore.Qt.WindowMaximized)
         self.timeout = timeout
         self.start = time.time()
         self.ui.message.setText(message)
@@ -42,6 +59,7 @@ class MessageWindow(QtGui.QDialog):
         #button = event.button()
         self.close()
 
-    def keyPressEvent(self, e):            
-        #if e.key() == QtCore.Qt.Key_Escape:
-        self.close()
+    def keyPressEvent(self, event):            
+        #if event.key() == QtCore.Qt.Key_Escape:
+        #self.close()
+        return

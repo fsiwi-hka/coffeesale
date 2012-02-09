@@ -49,6 +49,8 @@ def main():
     # Init Qt App
     app = QtGui.QApplication(sys.argv)
 
+    app.setOverrideCursor(QtGui.QCursor(10));
+
     # Init Window
     window = MainWindow(rfid, protocol)
     window.show()

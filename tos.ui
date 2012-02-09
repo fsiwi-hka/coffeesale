@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>522</width>
-    <height>333</height>
+    <height>356</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,7 +93,7 @@ QPushButton:pressed {
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>100</height>
+           <height>70</height>
           </size>
          </property>
          <property name="text">
@@ -106,7 +106,7 @@ QPushButton:pressed {
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>100</height>
+           <height>70</height>
           </size>
          </property>
          <property name="text">

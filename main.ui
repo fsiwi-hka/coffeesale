@@ -29,7 +29,7 @@ QLabel#message {
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(52, 161, 224, 255), stop:1 rgba(36, 110, 153, 255));
 	border-radius: 1em;
 	padding: 1em;
-	font-size: 22px;
+	font-size: 26px;
 	font-weight: bold;
 }
 
@@ -45,6 +45,7 @@ QPushButton, QToolButton {
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(212, 212, 212, 255));
 	text-align: bottom center;
 	padding: 0.3em;
+    font-size: 20px;
 }
 
 QPushButton:on, QToolButton:on {

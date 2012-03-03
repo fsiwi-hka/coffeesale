@@ -53,6 +53,7 @@ QPushButton, QToolButton {
 	border-radius: 0.5em;
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(212, 212, 212, 255));
 	padding: 0.3em;
+	font-size: 34px;
 }
 
 QPushButton:on, QToolButton:on {
@@ -74,7 +75,7 @@ QPushButton:pressed {
    <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
+   <item row="1" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -195,7 +196,7 @@ QPushButton:on, QToolButton:on {
            </property>
            <property name="font">
             <font>
-             <pointsize>24</pointsize>
+             <pointsize>-1</pointsize>
             </font>
            </property>
            <property name="text">
@@ -213,9 +214,7 @@ QPushButton:on, QToolButton:on {
            </property>
            <property name="font">
             <font>
-             <pointsize>24</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
+             <pointsize>-1</pointsize>
             </font>
            </property>
            <property name="text">
@@ -252,7 +251,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>38</pointsize>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -270,7 +269,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>38</pointsize>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -288,7 +287,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>38</pointsize>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -306,7 +305,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>38</pointsize>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -324,7 +323,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>38</pointsize>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -342,7 +341,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>38</pointsize>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -360,7 +359,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>38</pointsize>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -378,7 +377,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>38</pointsize>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -396,7 +395,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>38</pointsize>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -414,7 +413,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>38</pointsize>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -432,11 +431,7 @@ QPushButton:on, QToolButton:on {
          </property>
          <property name="font">
           <font>
-           <pointsize>50</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
-           <underline>false</underline>
+           <pointsize>-1</pointsize>
           </font>
          </property>
          <property name="text">
@@ -448,8 +443,21 @@ QPushButton:on, QToolButton:on {
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <spacer name="verticalSpacer_5">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="0">
+    <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>

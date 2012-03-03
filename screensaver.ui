@@ -23,7 +23,9 @@
 }
 
 #logo {
-	image: url(resource/logo.png);
+	background-image: url(resource/logo.png);
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 QLabel#message {

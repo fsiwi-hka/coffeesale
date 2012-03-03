@@ -25,7 +25,7 @@ from screensaverWindow import *
 
 # Interaction timeout in seconds
 MAIN_INTERACTION_TIMEOUT = 5
-SCREENSAVER_TIMEOUT = 60
+SCREENSAVER_TIMEOUT = 7
 
 # WTF PYTHON?!
 EURO = QtGui.QApplication.translate("", "€", None, QtGui.QApplication.UnicodeUTF8)

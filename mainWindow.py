@@ -4,7 +4,7 @@
 import sys, time, os, json, urllib
 from functools import partial
 from PyQt4 import QtGui, QtCore
-from PyQt4.phonon import Phonon
+import pygame
 
 from RFID import *
 
@@ -37,10 +37,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.setupUi(self)
         #self.show()
 
-        # Sound output
-        self.media = Phonon.MediaObject(self)
-        audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
-        Phonon.createPath(self.media, audioOutput)
+        # Initialize sound output
+        pygame.mixer.init()
 
         # Message Window
         self.messageWindow = MessageWindow()
@@ -223,8 +221,8 @@ class MainWindow(QtGui.QMainWindow):
         self.codeWindow.close()
 
         # Plays beep
-        self.media.setCurrentSource(Phonon.MediaSource("resource/beep.wav"))
-        self.media.play()
+        pygame.mixer.music.load("resource/beep.wav")
+        pygame.mixer.music.play()
 
         message = "Code eingelöst\n\n"
  

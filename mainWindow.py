@@ -31,10 +31,6 @@ class MainWindow(QtGui.QMainWindow):
         self.cfg = cfg
         #self.show()
 
-        # Read some config stuff
-        self.screensaver_timeout = cfg.client.screensaver_timeout
-        self.interaction_timeout = cfg.client.interaction_timeout
-
         # Initialize sound output
         pygame.mixer.init()
 
@@ -51,9 +47,6 @@ class MainWindow(QtGui.QMainWindow):
         self.screensaver = ScreensaverWindow()
 
         # Business logic stuff
-        self.lastInteraction = time.time()
-        self.lastAction = time.time()
-
         self.protocol = protocol
         self.rfid = rfid
         self.card = self.rfid.readCard()
@@ -72,20 +65,25 @@ class MainWindow(QtGui.QMainWindow):
         self.itemsTimer.setInterval(cfg.client.item_refresh)
         self.itemsTimer.start()
         
-        # Timer for display updates
-        self.displayTimer = QtCore.QTimer()
-        QtCore.QObject.connect(self.displayTimer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
-        self.displayUpdate()
-        self.displayTimer.setInterval(cfg.client.display_refresh)
-        self.displayTimer.start()
-        
         # Timer for rfid updates
         self.rfidTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
         self.rfidUpdate()
         self.rfidTimer.setInterval(cfg.client.rfid_refresh)
         self.rfidTimer.start()
+ 
+        # Timer for screensaver timeouts
+        self.screensaverTimer = QtCore.QTimer()
+        QtCore.QObject.connect(self.screensaverTimer, QtCore.SIGNAL("timeout()"), self.screensaverTimeout)
+        self.screensaverTimer.setInterval(cfg.client.screensaver_timeout * 1000)
+        self.screensaverTimer.start()
 
+         # Timer for interaction timeouts
+        self.interactionTimer = QtCore.QTimer()
+        QtCore.QObject.connect(self.interactionTimer, QtCore.SIGNAL("timeout()"), self.interactionTimeout)
+        self.interactionTimer.setInterval(cfg.client.interaction_timeout * 1000)
+        self.interactionTimer.start()
+ 
     def rebuildItems(self):
         self.messageWindow.show("Just a moment...", 999999)
         self.ui.message.setText("Rebuilding items")
@@ -152,6 +150,7 @@ class MainWindow(QtGui.QMainWindow):
             self.lastcard = None
             self.card = None
             self.messageWindow.close()
+            self.displayUpdate()
             return
 
         if not newcard.isSame(self.lastcard):
@@ -192,9 +191,6 @@ class MainWindow(QtGui.QMainWindow):
             if buyResp.success == False:
                 self.messageWindow.show("Nicht genug Bits.", 3)
                 return
-
-            # Mark this card as used, you cant buy any items with this card anymore 
-            #self.card.used = True
             
             balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
             balanceReq.action = "getBalance"
@@ -207,6 +203,7 @@ class MainWindow(QtGui.QMainWindow):
             message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
             self.messageWindow.show(message, 4)
+        self.displayUpdate()
 
     def redeemCode(self, code):
         if self.card == None or self.card.used == True:
@@ -246,21 +243,23 @@ class MainWindow(QtGui.QMainWindow):
         # update rfid
         self.card.valid = True
         self.rfidUpdate()
-        
+
+    def resetScreensaverTimeout(self):
+        self.screensaverTimer.stop()
+        self.screensaverTimer.start()
+
+    def resetInteractionTimeout(self):
+        self.interactionTimer.stop()
+        self.interactionTimer.start()
+
+    def screensaverTimeout(self):
+        self.screensaver.show()
+
+    def interactionTimeout(self):
+        for i in self.buttons:
+            self.buttons[i].setChecked(False)
 
     def displayUpdate(self):
-        t = time.time()
-
-        if self.lastAction + self.screensaver_timeout < t:
-            self.lastAction = t
-            self.screensaver.show()
-
-        # Reset selection if no interaction is made after specified time
-        if self.lastInteraction + self.interaction_timeout < t and self.card == None:
-            self.lastInteraction = t
-            for i in self.buttons:
-                self.buttons[i].setChecked(False)
-        
         cardtext = "Bitte Karte anlegen ..."
         price = ""
         
@@ -274,23 +273,29 @@ class MainWindow(QtGui.QMainWindow):
             cardtext += " - " + price
 
         messagetext = cardtext
-
         self.ui.message.setText(messagetext)
 
     def pushItemClicked(self, id):
-        self.lastInteraction = time.time()
+        self.resetInteractionTimeout()
+        self.resetScreensaverTimeout()
         for i in self.buttons:
             self.buttons[i].setChecked(False)
 
         self.buttons[id].setChecked(True)
+        self.displayUpdate()
 
     def pushChargeClicked(self):
-        self.lastInteraction = 0
+        self.resetInteractionTimeout()
+        self.interactionTimeout()
+        self.screensaverTimer.stop()
         if self.card:
             if not self.card.valid:
                 if self.tosWindow.exec_() == 0:
+                    self.screensaverTimer.start()
                     return
             self.codeWindow.exec_()
+        self.displayUpdate()
+        self.screensaverTimer.start()
 
     def keyPressEvent(self, e):            
         if e.key() == QtCore.Qt.Key_Escape:

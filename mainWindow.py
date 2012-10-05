@@ -45,7 +45,7 @@ class MainWindow(QtGui.QMainWindow):
         self.codeWindow = CodeWindow(self.messageWindow, self.redeemCode)
 
         # TOS Window
-        self.tosWindow = TosWindow(self.tosCallback)
+        self.tosWindow = TosWindow()
 
         # Screensaver
         self.screensaver = ScreensaverWindow()
@@ -69,19 +69,22 @@ class MainWindow(QtGui.QMainWindow):
         self.itemsTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.itemsTimer, QtCore.SIGNAL("timeout()"), self.rebuildItems)
         self.rebuildItems()
-        self.itemsTimer.start(cfg.client.item_refresh)
- 
+        self.itemsTimer.setInterval(cfg.client.item_refresh)
+        self.itemsTimer.start()
+        
         # Timer for display updates
         self.displayTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.displayTimer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
         self.displayUpdate()
-        self.displayTimer.start(cfg.client.display_refresh)
-
+        self.displayTimer.setInterval(cfg.client.display_refresh)
+        self.displayTimer.start()
+        
         # Timer for rfid updates
         self.rfidTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
         self.rfidUpdate()
-        self.rfidTimer.start(cfg.client.rfid_refresh)
+        self.rfidTimer.setInterval(cfg.client.rfid_refresh)
+        self.rfidTimer.start()
 
     def rebuildItems(self):
         self.messageWindow.show("Just a moment...", 999999)
@@ -207,7 +210,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def redeemCode(self, code):
         if self.card == None or self.card.used == True:
-            self.codeWindow.ui.message.setText("No Card?")
+            self.codeWindow.ui.message.setText("Karte nicht angelegt?")
             return
 
         oldBalance = self.card.balance                
@@ -284,15 +287,10 @@ class MainWindow(QtGui.QMainWindow):
     def pushChargeClicked(self):
         self.lastInteraction = 0
         if self.card:
-            if self.card.valid:
-                self.codeWindow.show()
-            else:
-                self.tosWindow.show()
-
-    def tosCallback(self, accepted):
-        if accepted:
-            self.lastInteraction = 0
-            self.codeWindow.show()
+            if not self.card.valid:
+                if self.tosWindow.exec_() == 0:
+                    return
+            self.codeWindow.exec_()
 
     def keyPressEvent(self, e):            
         if e.key() == QtCore.Qt.Key_Escape:

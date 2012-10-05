@@ -23,19 +23,17 @@ from tosWindow import *
 # Screensaver
 from screensaverWindow import *
 
-# Interaction timeout in seconds
-MAIN_INTERACTION_TIMEOUT = 5
-SCREENSAVER_TIMEOUT = 7
-
-# WTF PYTHON?!
-EURO = QtGui.QApplication.translate("", "€", None, QtGui.QApplication.UnicodeUTF8)
-
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, rfid, protocol):
+    def __init__(self, rfid, protocol, cfg):
         QtGui.QMainWindow.__init__(self)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
+        self.cfg = cfg
         #self.show()
+
+        # Read some config stuff
+        self.screensaver_timeout = cfg.client.screensaver_timeout
+        self.interaction_timeout = cfg.client.interaction_timeout
 
         # Initialize sound output
         pygame.mixer.init()
@@ -74,21 +72,23 @@ class MainWindow(QtGui.QMainWindow):
         self.displayTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.displayTimer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
         self.displayUpdate()
-        self.displayTimer.start(50)
+        self.displayTimer.start(cfg.client.display_refresh)
 
         self.rfidTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
         self.rfidUpdate()
-        self.rfidTimer.start(300)       
+        self.rfidTimer.start(cfg.client.rfid_refresh)
 
     def rebuildItems(self):
         self.messageWindow.show("Just a moment...", 999999)
         print "Rebuilding items...", 
+        
         # Remove all buttons
         for i in range(self.ui.buttonLayout.count()): 
             self.ui.buttonLayout.itemAt(i).widget().close()
 
         self.buttons = {}
+        
         # Add new buttons
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -240,12 +240,12 @@ class MainWindow(QtGui.QMainWindow):
     def displayUpdate(self):
         t = time.time()
 
-        if self.lastAction + SCREENSAVER_TIMEOUT < t:
+        if self.lastAction + self.screensaver_timeout < t:
             self.lastAction = t
             self.screensaver.show()
 
         # Reset selection if no interaction is made after specified time
-        if self.lastInteraction + MAIN_INTERACTION_TIMEOUT < t and self.card == None:
+        if self.lastInteraction + self.interaction_timeout < t and self.card == None:
             self.lastInteraction = t
             for i in self.buttons:
                 self.buttons[i].setChecked(False)

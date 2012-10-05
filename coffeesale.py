@@ -21,7 +21,6 @@ import httpsclient
 # Main Window logic 
 from mainWindow import *
 
-
 class ClientProtocol(object):
     def __init__(self, server_url, server_pub, client_priv):
         self.protocol = CoffeeProtocol()
@@ -57,7 +56,7 @@ def main():
         app.setOverrideCursor(QtGui.QCursor(10));
 
     # Init Window
-    window = MainWindow(rfid, protocol)
+    window = MainWindow(rfid, protocol, cfg)
     window.show()
     sys.exit(app.exec_())
 

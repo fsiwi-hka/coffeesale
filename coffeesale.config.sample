@@ -5,6 +5,10 @@ client:
     private_key: 'certificates/private.pem'
     hide_cursor: False
     use_rfid_dummy: True
+    screensaver_timeout: 30
+    interaction_timeout: 10
+    display_refresh: 20
+    rfid_refresh: 300
 }
 rfid:
 {

@@ -32,10 +32,10 @@ class ClientProtocol(object):
         return self.protocol.buildRequest(mifareid, cardid)
 
     def sendRequest(self, request):
-        return self.protocol.parseResponse(self.client.makeRequest(request.compile(self.client_priv)))
+        return self.protocol.parseResponse(self.client.jsonRequest(request.compile(self.client_priv)))
 
-    def makeGet(self, url):
-        return self.client.makeGet(url)
+    def getRequest(self, url):
+        return self.client.getRequest(url)
 
 def main():
     # Configuration

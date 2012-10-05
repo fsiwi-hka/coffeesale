@@ -106,7 +106,7 @@ class MainWindow(QtGui.QMainWindow):
         for item in resp.data['items']:
             self.items[item['id']] = item
             f = open("resource/items/" + str(item['id']) + ".png", "w+")
-            f.write(self.protocol.makeGet("resource/item/" + str(item['id'])))
+            f.write(self.protocol.getRequest("resource/item/" + str(item['id'])))
             f.close()
 
             button = QtGui.QPushButton(self.ui.centralwidget)

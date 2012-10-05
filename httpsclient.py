@@ -76,14 +76,14 @@ class HTTPSClient(object):
         self.server_url = server
         self.cert = cert
 
-    def makeGet(self, url):
+    def getRequest(self, url):
         handler = VerifiedHTTPSHandler(ca_certs = self.cert)
         opener = urllib2.build_opener(handler)
         response = opener.open(self.server_url + str(url)).read()
         opener.close()
         return response
 
-    def makeRequest(self, req_json):
+    def jsonRequest(self, req_json):
         handler = VerifiedHTTPSHandler(ca_certs = self.cert)
         req = {"request":req_json}
         params = urllib.urlencode(req)

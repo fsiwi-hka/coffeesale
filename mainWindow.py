@@ -62,18 +62,22 @@ class MainWindow(QtGui.QMainWindow):
         self.buttons = {}
         self.items = {}
 
-        # Rebuild ALL the items!
-        self.rebuildItems()
-
         # Close message window, we are done
         self.messageWindow.close()
  
-        # Timer for display and rfid updates
+        # Timer for item updates
+        self.itemsTimer = QtCore.QTimer()
+        QtCore.QObject.connect(self.itemsTimer, QtCore.SIGNAL("timeout()"), self.rebuildItems)
+        self.rebuildItems()
+        self.itemsTimer.start(cfg.client.item_refresh)
+ 
+        # Timer for display updates
         self.displayTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.displayTimer, QtCore.SIGNAL("timeout()"), self.displayUpdate)
         self.displayUpdate()
         self.displayTimer.start(cfg.client.display_refresh)
 
+        # Timer for rfid updates
         self.rfidTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
         self.rfidUpdate()
@@ -81,8 +85,11 @@ class MainWindow(QtGui.QMainWindow):
 
     def rebuildItems(self):
         self.messageWindow.show("Just a moment...", 999999)
+        self.ui.message.setText("Rebuilding items")
         print "Rebuilding items...", 
-        
+
+        QtCore.QCoreApplication.processEvents()
+
         # Remove all buttons
         for i in range(self.ui.buttonLayout.count()): 
             self.ui.buttonLayout.itemAt(i).widget().close()
@@ -132,6 +139,7 @@ class MainWindow(QtGui.QMainWindow):
         #self.buttons[-1] = button
         print "done."
         self.messageWindow.close()
+        self.displayUpdate()
 
     def rfidUpdate(self):
         #self.lastcard = self.card

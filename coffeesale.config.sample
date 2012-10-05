@@ -9,6 +9,7 @@ client:
     interaction_timeout: 10
     display_refresh: 20
     rfid_refresh: 300
+    item_refresh: 60000
 }
 rfid:
 {

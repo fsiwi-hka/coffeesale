@@ -107,7 +107,7 @@ QPushButton:pressed {
             <string>123456</string>
            </property>
            <property name="maxLength">
-            <number>6</number>
+            <number>8</number>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>

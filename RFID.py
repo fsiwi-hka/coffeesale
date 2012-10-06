@@ -2,16 +2,12 @@
 class RFIDCard(object):
     mifareid = 0
     cardid = 0
-    balance = 0
     valid = False
-    used = False
 
     def __init__(self, mifareid = -1, cardid = -1):
         self.mifareid = mifareid
         self.cardid = cardid
-        self.used = False
         self.valid = False
-        self.balance = 0
 
     def isSame(self, other):
         if not other:
@@ -20,7 +16,7 @@ class RFIDCard(object):
         return (other.mifareid == self.mifareid and other.cardid == self.cardid)
 
     def __repr__(self):
-        return "<RFIDCard('%s', '%s', '%s', '%s')>" % (self.mifareid, self.cardid, self.balance, self.used)
+        return "<RFIDCard('%s', '%s', '%s')>" % (self.mifareid, self.cardid, self.valid)
 
 class RFID(object):
     def __init__(self, key):

@@ -29,14 +29,16 @@ class MainWindow(QtGui.QMainWindow):
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
         self.cfg = cfg
-        #self.show()
+        self.show()
 
         # Initialize sound output
         pygame.mixer.init()
 
         # Message Window
         self.messageWindow = MessageWindow()
-
+        self.messageWindow.show("Just a moment...", 999999)
+        QtCore.QCoreApplication.processEvents()
+        
         # Code Window
         self.codeWindow = CodeWindow(self.messageWindow, self.redeemCode)
 
@@ -50,13 +52,25 @@ class MainWindow(QtGui.QMainWindow):
         self.protocol = protocol
         self.rfid = rfid
         self.card = self.rfid.readCard()
+        self.wallet = None
         self.lastcard = None
-        self.cardbalance = None
         self.buttons = {}
         self.items = {}
 
         # Close message window, we are done
         self.messageWindow.close()
+ 
+        # Timer for screensaver timeouts
+        self.screensaverTimer = QtCore.QTimer()
+        QtCore.QObject.connect(self.screensaverTimer, QtCore.SIGNAL("timeout()"), self.screensaverTimeout)
+        self.screensaverTimer.setInterval(cfg.client.screensaver_timeout * 1000)
+        self.screensaverTimer.start()
+
+         # Timer for interaction timeouts
+        self.interactionTimer = QtCore.QTimer()
+        QtCore.QObject.connect(self.interactionTimer, QtCore.SIGNAL("timeout()"), self.interactionTimeout)
+        self.interactionTimer.setInterval(cfg.client.interaction_timeout * 1000)
+        self.interactionTimer.start()
  
         # Timer for item updates
         self.itemsTimer = QtCore.QTimer()
@@ -71,18 +85,6 @@ class MainWindow(QtGui.QMainWindow):
         self.rfidUpdate()
         self.rfidTimer.setInterval(cfg.client.rfid_refresh)
         self.rfidTimer.start()
- 
-        # Timer for screensaver timeouts
-        self.screensaverTimer = QtCore.QTimer()
-        QtCore.QObject.connect(self.screensaverTimer, QtCore.SIGNAL("timeout()"), self.screensaverTimeout)
-        self.screensaverTimer.setInterval(cfg.client.screensaver_timeout * 1000)
-        self.screensaverTimer.start()
-
-         # Timer for interaction timeouts
-        self.interactionTimer = QtCore.QTimer()
-        QtCore.QObject.connect(self.interactionTimer, QtCore.SIGNAL("timeout()"), self.interactionTimeout)
-        self.interactionTimer.setInterval(cfg.client.interaction_timeout * 1000)
-        self.interactionTimer.start()
  
     def rebuildItems(self):
         self.messageWindow.show("Just a moment...", 999999)
@@ -149,39 +151,42 @@ class MainWindow(QtGui.QMainWindow):
         if newcard == None:
             self.lastcard = None
             self.card = None
+            self.wallet = None
             self.messageWindow.close()
             self.displayUpdate()
             return
 
         if not newcard.isSame(self.lastcard):
             self.screensaver.close()
-            self.lastAction = time.time()
+            #self.resetInteractionTimeout()
 
             self.lastcard = self.card
             self.card = newcard
 
             balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
-            balanceReq.action = "getBalance"
+            balanceReq.action = "getWallet"
             balanceResp = self.protocol.sendRequest(balanceReq) 
-            self.card.balance = balanceResp.data['balance']
+            #self.card.balance = balanceResp.data['balance']
+            self.wallet = balanceResp.data
 
             if balanceResp.success:
                 self.card.valid = True
 
-            self.lastCard = self.card
+            self.lastcard = self.card
         
         item = 0
         for i in self.buttons:
             if self.buttons[i].isChecked():
                 item = i
 
-        if self.card != None and self.card.used != True and item > 0:
+        if self.card != None and self.wallet != None and item > 0:
             # buy item
             for i in self.buttons:
                 self.buttons[i].setChecked(False)
 
             # Save old balance
-            oldBalance = self.card.balance                
+            #oldBalance = self.card.balance
+            oldBalance = self.wallet['balance']
             
             buyReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
             buyReq.action = "buyItem"
@@ -193,24 +198,26 @@ class MainWindow(QtGui.QMainWindow):
                 return
             
             balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
-            balanceReq.action = "getBalance"
+            balanceReq.action = "getWallet"
             balanceResp = self.protocol.sendRequest(balanceReq) 
-            self.card.balance = balanceResp.data['balance']               
+            #self.card.balance = balanceResp.data['balance'] 
+            self.wallet = balanceResp.data
 
             message = str(self.items[item]['desc']) + " gekauft\n\n"
             message += "Altes Guthaben: " + str(oldBalance) + " Bits\n"
-            message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
+            message += "Neues Guthaben: " + str(self.wallet['balance'])+ " Bits\n\n"
             message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
             self.messageWindow.show(message, 4)
         self.displayUpdate()
 
     def redeemCode(self, code):
-        if self.card == None or self.card.used == True:
+        if self.card == None:
             self.codeWindow.ui.message.setText("Karte nicht angelegt?")
             return
 
-        oldBalance = self.card.balance                
+        #oldBalance = self.card.balance
+        oldBalance = self.wallet['balance']
 
         redeemReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
         redeemReq.action = "redeemToken"
@@ -222,10 +229,10 @@ class MainWindow(QtGui.QMainWindow):
             return
         
         balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
-        balanceReq.action = "getBalance"
+        balanceReq.action = "getWallet"
         balanceResp = self.protocol.sendRequest(balanceReq) 
-        self.card.balance = balanceResp.data['balance']
-    
+        #self.card.balance = balanceResp.data['balance']
+        self.wallet = balanceResp.data
         self.codeWindow.close()
 
         # Plays beep
@@ -235,7 +242,7 @@ class MainWindow(QtGui.QMainWindow):
         message = "Code eingelöst\n\n"
  
         message += "Altes Guthaben: " + str(oldBalance) + " Bits\n\n"
-        message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
+        message += "Neues Guthaben: " + str(self.wallet['balance'])+ " Bits\n\n"
         message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
         self.messageWindow.show(message, 4)
@@ -267,8 +274,8 @@ class MainWindow(QtGui.QMainWindow):
             if self.buttons[i].isChecked():
                 price = self.items[i]['desc'] + " a " + str(self.items[i]['price']) + " Bits"
 
-        if self.card != None and self.card.used != True:
-            cardtext = "Guthaben: " + str(self.card.balance) + " Bits"
+        if self.card != None and self.wallet != None:
+            cardtext = "Guthaben: " + str(self.wallet['balance']) + " Bits"
         elif price != "":
             cardtext += " - " + price
 

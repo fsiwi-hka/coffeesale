@@ -25,6 +25,10 @@ from mainWindow import *
 # Message window
 from messageWindow import *
 
+class Struct:
+    def __init__(self, **entries): 
+        self.__dict__.update(entries)
+
 class ClientProtocol(object):
     def __init__(self, server_url, server_pub, client_priv):
         self.protocol = CoffeeProtocol()

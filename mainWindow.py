@@ -131,16 +131,26 @@ class MainWindow(QtGui.QMainWindow):
             self.buttons[item['id']] = button
 
         # Charge button...
-        button = QtGui.QPushButton(self.ui.centralwidget)
-        button.setSizePolicy(sizePolicy)
-        button.setFont(font)
-        button.setStyleSheet("image: url(resource/gold.png);")
-        button.setObjectName("Aufladen")
-        button.setText("Aufladen")
-        self.ui.buttonLayout.addWidget(button)
-        button.clicked.connect(self.pushChargeClicked)
-        #self.buttons[-1] = button
-        print "done."
+        self.chargeButton = QtGui.QPushButton(self.ui.centralwidget)
+        self.chargeButton.setSizePolicy(sizePolicy)
+        self.chargeButton.setFont(font)
+        self.chargeButton.setStyleSheet("image: url(resource/gold.png);")
+        self.chargeButton.setObjectName("Aufladen")
+        self.chargeButton.setText("Aufladen")
+        self.ui.buttonLayout.addWidget(self.chargeButton)
+        self.chargeButton.clicked.connect(self.pushChargeClicked)
+ 
+        self.adminButton = QtGui.QPushButton(self.ui.centralwidget)
+        self.adminButton.setSizePolicy(sizePolicy)
+        self.adminButton.setFont(font)
+        self.adminButton.setStyleSheet("image: url(resource/gold.png);")
+        self.adminButton.setObjectName("Admin")
+        self.adminButton.setText("Admin")
+        self.adminButton.setVisible(False)
+        self.ui.buttonLayout.addWidget(self.adminButton)
+        self.adminButton.clicked.connect(self.pushAdminClicked)
+         
+        print "done"
         self.messageWindow.close()
         self.displayUpdate()
 
@@ -165,12 +175,12 @@ class MainWindow(QtGui.QMainWindow):
 
             balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
             balanceReq.action = "getWallet"
-            balanceResp = self.protocol.sendRequest(balanceReq) 
-            #self.card.balance = balanceResp.data['balance']
+            balanceResp = self.protocol.sendRequest(balanceReq)
             self.wallet = balanceResp.data
 
             if balanceResp.success:
                 self.card.valid = True
+                self.card.balance = balanceResp.data['balance']
 
             self.lastcard = self.card
         
@@ -179,14 +189,13 @@ class MainWindow(QtGui.QMainWindow):
             if self.buttons[i].isChecked():
                 item = i
 
-        if self.card != None and self.wallet != None and item > 0:
+        if self.card != None and item > 0:
             # buy item
             for i in self.buttons:
                 self.buttons[i].setChecked(False)
 
             # Save old balance
-            #oldBalance = self.card.balance
-            oldBalance = self.wallet['balance']
+            oldBalance = self.card.balance
             
             buyReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
             buyReq.action = "buyItem"
@@ -200,12 +209,12 @@ class MainWindow(QtGui.QMainWindow):
             balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
             balanceReq.action = "getWallet"
             balanceResp = self.protocol.sendRequest(balanceReq) 
-            #self.card.balance = balanceResp.data['balance'] 
+            self.card.balance = balanceResp.data['balance'] 
             self.wallet = balanceResp.data
 
             message = str(self.items[item]['desc']) + " gekauft\n\n"
             message += "Altes Guthaben: " + str(oldBalance) + " Bits\n"
-            message += "Neues Guthaben: " + str(self.wallet['balance'])+ " Bits\n\n"
+            message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
             message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
             self.messageWindow.show(message, 4)
@@ -216,8 +225,7 @@ class MainWindow(QtGui.QMainWindow):
             self.codeWindow.ui.message.setText("Karte nicht angelegt?")
             return
 
-        #oldBalance = self.card.balance
-        oldBalance = self.wallet['balance']
+        oldBalance = self.card.balance
 
         redeemReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
         redeemReq.action = "redeemToken"
@@ -231,7 +239,7 @@ class MainWindow(QtGui.QMainWindow):
         balanceReq = self.protocol.buildRequest(self.card.mifareid, self.card.cardid)
         balanceReq.action = "getWallet"
         balanceResp = self.protocol.sendRequest(balanceReq) 
-        #self.card.balance = balanceResp.data['balance']
+        self.card.balance = balanceResp.data['balance']
         self.wallet = balanceResp.data
         self.codeWindow.close()
 
@@ -242,7 +250,7 @@ class MainWindow(QtGui.QMainWindow):
         message = "Code eingelöst\n\n"
  
         message += "Altes Guthaben: " + str(oldBalance) + " Bits\n\n"
-        message += "Neues Guthaben: " + str(self.wallet['balance'])+ " Bits\n\n"
+        message += "Neues Guthaben: " + str(self.card.balance)+ " Bits\n\n"
         message = QtGui.QApplication.translate("", message, None, QtGui.QApplication.UnicodeUTF8)
 
         self.messageWindow.show(message, 4)
@@ -270,12 +278,14 @@ class MainWindow(QtGui.QMainWindow):
         cardtext = "Bitte Karte anlegen ..."
         price = ""
         
+        self.adminButton.setVisible(False)
+        
         for i in self.buttons:
             if self.buttons[i].isChecked():
                 price = self.items[i]['desc'] + " a " + str(self.items[i]['price']) + " Bits"
 
-        if self.card != None and self.wallet != None:
-            cardtext = "Guthaben: " + str(self.wallet['balance']) + " Bits"
+        if self.card != None:
+            cardtext = "Guthaben: " + str(self.card.balance) + " Bits"
         elif price != "":
             cardtext += " - " + price
 
@@ -303,6 +313,9 @@ class MainWindow(QtGui.QMainWindow):
             self.codeWindow.exec_()
         self.displayUpdate()
         self.screensaverTimer.start()
+
+    def pushAdminClicked(self):
+        return
 
     def keyPressEvent(self, e):            
         if e.key() == QtCore.Qt.Key_Escape:

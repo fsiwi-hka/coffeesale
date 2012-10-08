@@ -78,7 +78,7 @@ class CodeWindow(QtGui.QDialog):
 
     def pushConfirm(self):
         self.lastInteraction = time.time()
-        self.codeCallback(self.ui.lineCode.text())
+        self.codeCallback(self.ui.lineCode.text().toLatin1().data())
 
     def pushCancel(self):
         self.close()

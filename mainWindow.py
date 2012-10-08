@@ -216,7 +216,10 @@ class MainWindow(QtGui.QMainWindow):
             self.codeWindow.ui.message.setText("Karte nicht angelegt?")
             return
 
-        oldBalance = self.wallet.balance
+        oldBalance = 0
+        
+        if self.wallet is not None:
+            oldBalance = self.wallet.balance
 
         redeemResp = self.client.redeemToken(int(code), self.card.mifareid, self.card.cardid)
 
@@ -268,8 +271,11 @@ class MainWindow(QtGui.QMainWindow):
             if self.buttons[i].isChecked():
                 price = self.items[i].desc + " a " + str(self.items[i].price) + " Bits"
 
-        if self.wallet != None:
-            cardtext = "Guthaben: " + str(self.wallet.balance) + " Bits"
+        if self.card != None:
+            if self.wallet != None:
+                cardtext = "Guthaben: " + str(self.wallet.balance) + " Bits"
+            else:
+                cardtext = "Guthaben: 0 Bits"
         elif price != "":
             cardtext += " - " + price
 

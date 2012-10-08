@@ -293,12 +293,13 @@ class MainWindow(QtGui.QMainWindow):
         for i in self.buttons:
             self.buttons[i].setChecked(False)
 
-        self.buttons[id].setChecked(True)
+        if self.wallet is not None:
+            self.buttons[id].setChecked(True)
+
         self.displayUpdate()
 
     def pushChargeClicked(self):
         self.resetInteractionTimeout()
-        self.interactionTimeout()
         self.screensaverTimer.stop()
         if self.card:
             if not self.card.valid:

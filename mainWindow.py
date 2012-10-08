@@ -215,11 +215,7 @@ class MainWindow(QtGui.QMainWindow):
         self.displayUpdate()
 
     def redeemCode(self, token):
-        code = 0
-        try:
-            code = int(token)
-        except:
-            pass
+        code = token
 
         if self.card == None:
             self.codeWindow.ui.message.setText("Karte nicht angelegt?")

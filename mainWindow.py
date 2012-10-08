@@ -193,7 +193,10 @@ class MainWindow(QtGui.QMainWindow):
                 self.buttons[i].setChecked(False)
 
             # Save old balance
-            oldBalance = self.wallet.balance
+            oldBalance = 0
+            
+            if self.wallet is not None:
+                oldBalance = self.wallet.balance
           
             buyReq = self.client.buyItem(item, self.card.mifareid, self.card.cardid)
 
@@ -211,7 +214,13 @@ class MainWindow(QtGui.QMainWindow):
             self.messageWindow.show(message, 4)
         self.displayUpdate()
 
-    def redeemCode(self, code):
+    def redeemCode(self, token):
+        code = 0
+        try:
+            code = int(token)
+        except:
+            pass
+
         if self.card == None:
             self.codeWindow.ui.message.setText("Karte nicht angelegt?")
             return
@@ -221,14 +230,14 @@ class MainWindow(QtGui.QMainWindow):
         if self.wallet is not None:
             oldBalance = self.wallet.balance
 
-        redeemResp = self.client.redeemToken(int(code), self.card.mifareid, self.card.cardid)
+        redeemResp = self.client.redeemToken(code, self.card.mifareid, self.card.cardid)
 
         if redeemResp == False:
-            self.codeWindow.ui.message.setText("Token Falsch! :(")
+            self.codeWindow.ui.message.setText("Token ist falsch.")
             return
        
         self.wallet = self.client.getWallet(self.card.mifareid, self.card.cardid)
-        self.codeWindow.close()
+        self.codeWindow.accept()
 
         # Plays beep
         pygame.mixer.music.load("resource/beep.wav")

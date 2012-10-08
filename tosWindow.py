@@ -19,6 +19,7 @@ class TosWindow(QtGui.QDialog):
     def show(self):
         QtGui.QDialog.show(self)
         self.setWindowState(QtCore.Qt.WindowMaximized)
+        self.setModal(True)
 
     def pushAccept(self):
         self.accept()

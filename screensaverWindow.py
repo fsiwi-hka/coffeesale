@@ -35,7 +35,6 @@ class ScreensaverWindow(QtGui.QDialog):
         QtGui.QDialog.show(self)
 
         # EVIL HACK FOR XMONAD/X11/XORG
-
         desk = QtGui.QDesktopWidget()
         r = desk.screenGeometry()
         offset = 4

@@ -317,10 +317,11 @@ class MainWindow(QtGui.QMainWindow):
         return
 
     def onMessageLabelClicked(self, event):
+        self.resetScreensaverTimeout()
         try:
             if self.card is not None:
-                if self.card.ccBalance != 1:
-                    s = "CampusCard\n\nBalance: " + str(self.card.ccBalance) + "\nLast Balance: " + str(self.card.ccLastBalance)
+                if self.card.ccBalance != None or False == True:
+                    s = "CampusCard\n\nBalance: %0.2f Euro\nLast Balance: %0.2f Euro" % (self.card.ccBalance, self.card.ccLastBalance)
                     self.messageWindow.show(s, 2)
         except:
             pass

@@ -1,15 +1,32 @@
+import string
+import base64
+import struct
+from array import array
+
+def toUInt16BE(data, off):
+    s = chr(data[off]) + chr(data[off+1])
+    return struct.unpack(">H", s)[0]
+
+def toUInt16LE(data, off):
+    s = chr(data[off]) + chr(data[off+1])
+    return struct.unpack("<H", s)[0]
 
 class RFIDCard(object):
     mifareid = 0
     cardid = 0
     valid = False
     balance = 0
+    ccBalance = -1
+    ccLastBalance = -1
 
     def __init__(self, mifareid = -1, cardid = -1):
         self.mifareid = mifareid
         self.cardid = cardid
         self.valid = False
         self.balance = 0
+        self.ccBalance = -1
+        self.ccLastBalance = -1
+
 
     def isSame(self, other):
         if not other:
@@ -21,16 +38,50 @@ class RFIDCard(object):
         return "<RFIDCard('%s', '%s', '%s', '%s')>" % (self.mifareid, self.cardid, self.valid, self.balance)
 
 
-# RFIDIOt library
-import RFIDIOtconfig
-
 
 class RFID(object):
     def __init__(self, key):
 
         self.key = key
         self.card = None
-       
+        
+        # RFIDIOt library
+        global RFIDIOtconfig
+        import RFIDIOtconfig
+
+    def readBlock(self, block, key):
+        self.card.select()
+        if self.card.login(block/4, 'AA', key):
+            self.card.readMIFAREblock(block)
+            return self.card.MIFAREdata
+        return None
+
+    def parseWallet(self):
+        block24 = self.readBlock(24, 'A0A1A2A3A4A5')
+        block25 = self.readBlock(25, 'A0A1A2A3A4A5')
+        block26 = self.readBlock(26, 'A0A1A2A3A4A5')
+        data = bytearray(base64.b16decode(block24 + block25 + block26))
+
+        key = int(data[41])
+        for i in range(9, 45):
+            data[i] = data[i] ^ key
+
+        WALLET_TCOUNT_KEY = 0x0404
+        value_key = toUInt16BE(data, 42)
+        front_value = toUInt16LE(data, 26) ^ value_key
+        back_value = toUInt16LE(data, 31) ^ value_key ^ 0x3b05
+        front_count = toUInt16BE(data, 28) ^ WALLET_TCOUNT_KEY
+        back_count = toUInt16BE(data, 33) ^ WALLET_TCOUNT_KEY ^ 0x3d3e
+
+        if front_count == back_count:
+            currentBalance = float(front_value) / 100.0
+            lastBalance = float(back_value) / 100.0
+        else:
+            currentBalance = float(back_value) / 100.0
+            lastBalance = float(front_value) / 100.0
+
+        return [currentBalance, lastBalance]
+
     def readCard(self):
         if self.card is None:
             try:
@@ -66,8 +117,17 @@ class RFID(object):
 
         if cardid == -1 or mifareid == -1:
             return None
+        
+        wallet = [-1, -1]
+        try:
+            wallet = self.parseWallet()
+        except:
+            pass
 
-        return RFIDCard(mifareid, cardid)
+        card = RFIDCard(mifareid, cardid)
+        card.ccBalance = wallet[0]
+        card.ccLastBalance = wallet[1]
+        return card
 
 class RFIDdummy(object):
     def __init__(self, key):

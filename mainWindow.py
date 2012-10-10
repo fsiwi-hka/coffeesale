@@ -85,7 +85,10 @@ class MainWindow(QtGui.QMainWindow):
         self.rfidUpdate()
         self.rfidTimer.setInterval(cfg.client.rfid_refresh)
         self.rfidTimer.start()
- 
+
+        # Click event for message label
+        self.ui.message.mousePressEvent = self.onMessageLabelClicked
+
     def rebuildItems(self):
         self.messageWindow.show("Just a moment...", 999999)
         self.ui.message.setText("Rebuilding items")
@@ -312,6 +315,12 @@ class MainWindow(QtGui.QMainWindow):
 
     def pushAdminClicked(self):
         return
+
+    def onMessageLabelClicked(self, event):
+        if self.card is not None:
+            if self.card.ccBalance != None:
+                s = "CampusCard\n\nBalance: " + str(self.card.ccBalance) + "\nLast Balance: " + str(self.card.ccLastBalance)
+                self.messageWindow.show(s, 2)
 
     def keyPressEvent(self, e):            
         if e.key() == QtCore.Qt.Key_Escape:

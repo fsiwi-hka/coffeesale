@@ -317,10 +317,13 @@ class MainWindow(QtGui.QMainWindow):
         return
 
     def onMessageLabelClicked(self, event):
-        if self.card is not None:
-            if self.card.ccBalance != None:
-                s = "CampusCard\n\nBalance: " + str(self.card.ccBalance) + "\nLast Balance: " + str(self.card.ccLastBalance)
-                self.messageWindow.show(s, 2)
+        try:
+            if self.card is not None:
+                if self.card.ccBalance != 1:
+                    s = "CampusCard\n\nBalance: " + str(self.card.ccBalance) + "\nLast Balance: " + str(self.card.ccLastBalance)
+                    self.messageWindow.show(s, 2)
+        except:
+            pass
 
     def keyPressEvent(self, e):            
         if e.key() == QtCore.Qt.Key_Escape:

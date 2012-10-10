@@ -160,9 +160,10 @@ class rfidiot:
 					self.ser.readline()
 					self.ser.flushInput()
 					self.ser.flushOutput()
-				except:
+				except Exception as e:
 					print 'Could not open serial port %s' % port
-					os._exit(True)
+ 					raise e
+					
 	#
 	# variables
 	#

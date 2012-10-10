@@ -20,20 +20,33 @@ class RFIDCard(object):
     def __repr__(self):
         return "<RFIDCard('%s', '%s', '%s', '%s')>" % (self.mifareid, self.cardid, self.valid, self.balance)
 
+
+# RFIDIOt library
+import RFIDIOtconfig
+
+
 class RFID(object):
     def __init__(self, key):
 
-        # RFIDIOt library
-        import RFIDIOtconfig
-
         self.key = key
-        try:
-            self.card = RFIDIOtconfig.card
-        except:
-            os._exit(False)
-    
+        self.card = None
+       
     def readCard(self):
-        if not self.card.select():
+        if self.card is None:
+            try:
+                global RFIDIOtconfig
+                RFIDIOtconfig  = reload(RFIDIOtconfig)
+
+                self.card = RFIDIOtconfig.card
+            except Exception as e:
+                return None
+
+        try:
+            if not self.card.select():
+                return None
+        except:
+            self.card.ser.close()
+            self.card = None
             return None
 
         cardid = -1
@@ -47,6 +60,8 @@ class RFID(object):
             else:
                 return None
         except:
+            self.card.ser.close()
+            self.card = None
             return None
 
         if cardid == -1 or mifareid == -1:

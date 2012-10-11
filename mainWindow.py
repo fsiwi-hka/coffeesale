@@ -263,7 +263,8 @@ class MainWindow(QtGui.QMainWindow):
         self.interactionTimer.start()
 
     def screensaverTimeout(self):
-        self.screensaver.show()
+        if self.card is None:
+            self.screensaver.show()
 
     def interactionTimeout(self):
         for i in self.buttons:

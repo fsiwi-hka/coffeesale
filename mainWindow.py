@@ -322,7 +322,7 @@ class MainWindow(QtGui.QMainWindow):
         try:
             if self.card is not None:
                 if self.card.ccBalance != None or False == True:
-                    s = "CampusCard\n\nBalance: %0.2f Euro\nLast Balance: %0.2f Euro" % (self.card.ccBalance, self.card.ccLastBalance)
+                    s = "CampusCard\n\nAktuelles Guthaben: %0.2f Euro\nLetztes Guthaben: %0.2f Euro" % (self.card.ccBalance, self.card.ccLastBalance)
                     self.messageWindow.show(s, 2)
         except:
             pass

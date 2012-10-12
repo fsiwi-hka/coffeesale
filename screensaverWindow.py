@@ -8,8 +8,8 @@ from PyQt4 import QtGui, QtCore
 from screensaverUi import Ui_Screensaver
 
 class ScreensaverWindow(QtGui.QDialog):
-    def __init__(self):
-        QtGui.QDialog.__init__(self)
+    def __init__(self, parent=None):
+        QtGui.QDialog.__init__(self, parent)
 
         self.ui=Ui_Screensaver()
         self.ui.setupUi(self)

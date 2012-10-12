@@ -8,8 +8,8 @@ from PyQt4 import QtGui, QtCore
 from tosUi import Ui_TosWindow
 
 class TosWindow(QtGui.QDialog):
-    def __init__(self):
-        QtGui.QDialog.__init__(self)
+    def __init__(self, parent=None):
+        QtGui.QDialog.__init__(self, parent)
 
         self.ui=Ui_TosWindow()
         self.ui.setupUi(self)

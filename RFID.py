@@ -1,7 +1,9 @@
 import string
 import base64
 import struct
+import time
 from array import array
+from PyQt4.QtCore import *
 
 def toUInt16BE(data, off):
     s = chr(data[off]) + chr(data[off+1])
@@ -27,7 +29,6 @@ class RFIDCard(object):
         self.ccBalance = -1
         self.ccLastBalance = -1
 
-
     def isSame(self, other):
         if not other:
             return False
@@ -37,18 +38,33 @@ class RFIDCard(object):
     def __repr__(self):
         return "<RFIDCard('%s', '%s', '%s', '%s')>" % (self.mifareid, self.cardid, self.valid, self.balance)
 
-
-
-class RFID(object):
-    def __init__(self, key):
-
+class RFIDWorkerBase(QThread):
+    key = ""
+    def __init__(self, key, parent=None):
         self.key = key
-        self.card = None
-        
+        QThread.__init__(self, parent)
+
+    def __del__(self):
+        None
+
+    def run(self):
+        None
+
+class RFIDWorker(RFIDWorkerBase):
+    def __init__(self, key, parent=None):
+        RFIDWorkerBase.__init__(self, key, parent)
+        self.key = key
+
         # RFIDIOt library
         global RFIDIOtconfig
         import RFIDIOtconfig
 
+    def run(self):
+        while True:
+            card = self.readCard()
+            self.emit(SIGNAL("cardRead(PyQt_PyObject)"), card)
+            time.sleep(0.25)
+    
     def readBlock(self, block, key):
         self.card.select()
         if self.card.login(block/4, 'AA', key):
@@ -129,10 +145,16 @@ class RFID(object):
         card.ccLastBalance = wallet[1]
         return card
 
-class RFIDdummy(object):
-    def __init__(self, key):
-        self.key = key
-    
+class RFIDDummyWorker(RFIDWorkerBase):
+    def __init__(self, key, parent=None):
+        RFIDWorkerBase.__init__(self, key, parent)
+
+    def run(self):
+        while True:
+            card = self.readCard()
+            self.emit(SIGNAL("cardRead(PyQt_PyObject)"), card)
+            time.sleep(0.25)
+
     def readCard(self):
         card = "0"
         try:

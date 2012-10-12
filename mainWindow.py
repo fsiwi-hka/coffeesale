@@ -24,7 +24,7 @@ from tosWindow import *
 from screensaverWindow import *
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, rfid, client, cfg):
+    def __init__(self, client, cfg):
         QtGui.QMainWindow.__init__(self)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
@@ -48,13 +48,21 @@ class MainWindow(QtGui.QMainWindow):
         # Screensaver
         self.screensaver = ScreensaverWindow(self)
 
+        # RFID reading
+        if not cfg.client.use_rfid_dummy:
+            self.rfid = RFIDWorker(cfg.rfid.key)
+        else:
+            self.rfid = RFIDDummyWorker(cfg.rfid.key)
+        self.connect(self.rfid, SIGNAL("cardRead(PyQt_PyObject)"), self.rfidUpdate)
+        self.rfid.start()
+ 
         # Business logic stuff
         self.client = client
-        self.rfid = rfid
         self.card = self.rfid.readCard()
         self.wallet = None
         self.user = None
         self.lastcard = None
+        self.adminButton = None
         self.buttons = {}
         self.items = {}
 
@@ -83,9 +91,9 @@ class MainWindow(QtGui.QMainWindow):
         # Timer for rfid updates
         self.rfidTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
-        self.rfidUpdate()
-        self.rfidTimer.setInterval(cfg.client.rfid_refresh)
-        self.rfidTimer.start()
+        #self.rfidUpdate()
+        #self.rfidTimer.setInterval(cfg.client.rfid_refresh)
+        #self.rfidTimer.start()
 
         # Click event for message label
         self.ui.message.mousePressEvent = self.onMessageLabelClicked
@@ -160,9 +168,9 @@ class MainWindow(QtGui.QMainWindow):
         self.messageWindow.close()
         self.displayUpdate()
 
-    def rfidUpdate(self):
+    def rfidUpdate(self, newcard):
         #self.lastcard = self.card
-        newcard = self.rfid.readCard()
+        #newcard = self.rfid.readCard()
 
         if newcard == None:
             self.lastcard = None
@@ -278,7 +286,8 @@ class MainWindow(QtGui.QMainWindow):
         price = ""
        
 
-        self.adminButton.setVisible((self.user != None and self.user.admin == True))
+        if self.adminButton is not None:
+            self.adminButton.setVisible((self.user != None and self.user.admin == True))
         
         for i in self.buttons:
             if self.buttons[i].isChecked():

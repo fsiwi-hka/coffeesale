@@ -7,7 +7,6 @@ client:
     use_rfid_dummy: True
     screensaver_timeout: 30
     interaction_timeout: 10
-    rfid_refresh: 300
     item_refresh: 60000
 }
 rfid:

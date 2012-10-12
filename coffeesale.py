@@ -168,11 +168,6 @@ def main():
     # Configuration
     cfg = config.Config(file("coffeesale.config"))
 
-    if not cfg.client.use_rfid_dummy:
-        rfid = RFID(cfg.rfid.key)
-    else:
-        rfid = RFIDdummy(cfg.rfid.key)
-
     # Init Qt App
     app = QtGui.QApplication(sys.argv)
 
@@ -186,7 +181,7 @@ def main():
         app.setOverrideCursor(QtGui.QCursor(10));
 
     # Init Window
-    window = MainWindow(rfid, client, cfg)
+    window = MainWindow(client, cfg)
     window.show()
     sys.exit(app.exec_())
 

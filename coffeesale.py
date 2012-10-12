@@ -44,9 +44,6 @@ class ClientProtocol(object):
         return self.protocol.buildRequest(mifareid, cardid)
 
     def sendRequest(self, request):
-        response = self.client.jsonRequest(request.compile(self.client_priv))
-        return self.protocol.parseResponse(response)
-
         success = False
         tries = 0
         while success is not True:

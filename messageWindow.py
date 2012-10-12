@@ -8,8 +8,8 @@ from PyQt4 import QtGui, QtCore
 from messageUi import Ui_MessageWindow
 
 class MessageWindow(QtGui.QDialog):
-    def __init__(self):
-        QtGui.QDialog.__init__(self)
+    def __init__(self, parent=None):
+        QtGui.QDialog.__init__(self, parent)
 
         self.ui=Ui_MessageWindow()
         self.ui.setupUi(self)

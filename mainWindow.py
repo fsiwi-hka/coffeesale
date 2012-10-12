@@ -35,18 +35,18 @@ class MainWindow(QtGui.QMainWindow):
         pygame.mixer.init()
 
         # Message Window
-        self.messageWindow = MessageWindow()
+        self.messageWindow = MessageWindow(self)
         self.messageWindow.show("Just a moment...", 999999)
         QtCore.QCoreApplication.processEvents()
         
         # Code Window
-        self.codeWindow = CodeWindow(self.messageWindow, self.redeemCode)
+        self.codeWindow = CodeWindow(self.messageWindow, self.redeemCode, self)
 
         # TOS Window
-        self.tosWindow = TosWindow()
+        self.tosWindow = TosWindow(self)
 
         # Screensaver
-        self.screensaver = ScreensaverWindow()
+        self.screensaver = ScreensaverWindow(self)
 
         # Business logic stuff
         self.client = client

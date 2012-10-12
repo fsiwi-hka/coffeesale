@@ -103,12 +103,16 @@ class Item(object):
     price = 0
     desc = ""
     image = ""
+    enabled = True
+    sold_out = False
 
-    def __init__(self, id, price, desc, image):
+    def __init__(self, id, price, desc, image, enabled, sold_out):
         self.id = id
         self.price = price
         self.desc = desc
         self.image = image
+        self.enabled = enabled
+        self.sold_out = sold_out
 
 class CoffeeClient(object):
     protocol = None
@@ -134,7 +138,7 @@ class CoffeeClient(object):
             return None
         items = []
         for item in resp.data['items']:
-            items.append(Item(item['id'], item['price'], item['desc'], item['image']))
+            items.append(Item(item['id'], item['price'], item['desc'], item['image'], item['enabled'], item['sold_out']))
         return items
 
     def getWallet(self, mifareid, cardid):

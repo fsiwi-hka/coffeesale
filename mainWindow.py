@@ -129,6 +129,8 @@ class MainWindow(QtGui.QMainWindow):
         #self.items = resp.data['items']
         for item in items:
             self.items[item.id] = item
+            if item.enabled != True:
+                next
             f = open("resource/items/" + str(item.id) + ".png", "w+")
             f.write(self.client.getRequest("resource/item/" + str(item.id)))
             f.close()
@@ -139,7 +141,14 @@ class MainWindow(QtGui.QMainWindow):
             button.setStyleSheet("image: url(resource/items/" + str(item.id) + ".png);")
             button.setCheckable(True)
             button.setObjectName(item.desc)
-            button.setText(item.desc + " / " + str(item.price) + " Bits")
+    
+            if item.sold_out:
+                button.setText(item.desc + "\nAusverkauft")
+                button.setEnabled(False)
+            else:
+                button.setText(item.desc + " / " + str(item.price) + " Bits")
+                button.setEnabled(True)
+
             self.ui.buttonLayout.addWidget(button)
             button.clicked.connect(partial(self.pushItemClicked, item.id))
             self.buttons[item.id] = button

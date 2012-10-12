@@ -53,6 +53,7 @@ class MainWindow(QtGui.QMainWindow):
         self.rfid = rfid
         self.card = self.rfid.readCard()
         self.wallet = None
+        self.user = None
         self.lastcard = None
         self.buttons = {}
         self.items = {}
@@ -167,6 +168,7 @@ class MainWindow(QtGui.QMainWindow):
             self.lastcard = None
             self.card = None
             self.wallet = None
+            self.user = None
             self.messageWindow.close()
             self.displayUpdate()
             return
@@ -182,6 +184,7 @@ class MainWindow(QtGui.QMainWindow):
 
             if self.wallet != None:
                 self.card.valid = True
+                self.user = self.client.getUser(self.card.mifareid, self.card.cardid)
 
             self.lastcard = self.card
         
@@ -273,8 +276,9 @@ class MainWindow(QtGui.QMainWindow):
     def displayUpdate(self):
         cardtext = "Bitte Karte anlegen ..."
         price = ""
-        
-        self.adminButton.setVisible(False)
+       
+
+        self.adminButton.setVisible((self.user != None and self.user.admin == True))
         
         for i in self.buttons:
             if self.buttons[i].isChecked():

@@ -171,7 +171,7 @@ class MainWindow(QtGui.QMainWindow):
         self.adminButton = QtGui.QPushButton(self.ui.centralwidget)
         self.adminButton.setSizePolicy(sizePolicy)
         self.adminButton.setFont(font)
-        self.adminButton.setStyleSheet("image: url(resource/gold.png);")
+        self.adminButton.setStyleSheet("image: url(resource/admin.png);")
         self.adminButton.setObjectName("Admin")
         self.adminButton.setText("Admin")
         self.adminButton.setVisible(False)

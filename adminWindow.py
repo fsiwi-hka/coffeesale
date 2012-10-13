@@ -10,13 +10,15 @@ from adminUi import Ui_AdminWindow
 class AdminWindow(QtGui.QDialog):
     def __init__(self, parent=None):
         QtGui.QDialog.__init__(self, parent, QtCore.Qt.Window)
-
         self.ui=Ui_AdminWindow()
         self.ui.setupUi(self)
+        self.setModal(True)
+
+        self.ui.pushBack.clicked.connect(self.pushBack)
 
     def show(self):
         QtGui.QDialog.show(self)
         self.setWindowState(QtCore.Qt.Fullscreen)
-        self.setModal(True)
 
-
+    def pushBack(self):
+        self.reject()

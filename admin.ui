@@ -36,12 +36,15 @@ QPushButton:on, QToolButton:on {
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="backButton">
+      <widget class="QPushButton" name="pushBack">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">image: url(resource/back.png);</string>
        </property>
        <property name="text">
         <string>Zurück</string>
@@ -49,12 +52,15 @@ QPushButton:on, QToolButton:on {
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="itemAdminButton">
+      <widget class="QPushButton" name="pushAdmin">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">image: url(resource/admin.png);</string>
        </property>
        <property name="text">
         <string>Administration</string>
@@ -62,12 +68,15 @@ QPushButton:on, QToolButton:on {
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="statisticsButton">
+      <widget class="QPushButton" name="pushStatistic">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">image: url(resource/stats.png);</string>
        </property>
        <property name="text">
         <string>Statistik</string>

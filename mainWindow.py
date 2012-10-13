@@ -20,8 +20,11 @@ from messageWindow import *
 # TOS Window
 from tosWindow import *
 
-# Screensaver
+# Screensaver Window
 from screensaverWindow import *
+
+# Admin Window
+from adminWindow import *
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, client, cfg):
@@ -39,14 +42,11 @@ class MainWindow(QtGui.QMainWindow):
         self.messageWindow.show("Just a moment...", 999999)
         QtCore.QCoreApplication.processEvents()
         
-        # Code Window
+        # Windows
         self.codeWindow = CodeWindow(self.messageWindow, self.redeemCode, self)
-
-        # TOS Window
         self.tosWindow = TosWindow(self)
-
-        # Screensaver
-        self.screensaver = ScreensaverWindow(self)
+        self.screensaverWindow = ScreensaverWindow(self)
+        self.adminWindow = AdminWindow(self)
 
         # RFID reading
         if not cfg.client.use_rfid_dummy:
@@ -129,12 +129,15 @@ class MainWindow(QtGui.QMainWindow):
         #self.items = resp.data['items']
         for item in items:
             self.items[item.id] = item
-            if item.enabled != True:
-                next
+
+            # Download the item icon
             f = open("resource/items/" + str(item.id) + ".png", "w+")
             f.write(self.client.getRequest("resource/item/" + str(item.id)))
             f.close()
 
+            
+            if item.enabled != True:
+                next
             button = QtGui.QPushButton(self.ui.centralwidget)
             button.setSizePolicy(sizePolicy)
             button.setFont(font)
@@ -191,7 +194,7 @@ class MainWindow(QtGui.QMainWindow):
             return
 
         if not newcard.isSame(self.lastcard):
-            self.screensaver.close()
+            self.screensaverWindow.close()
             #self.resetInteractionTimeout()
 
             self.lastcard = self.card
@@ -284,11 +287,17 @@ class MainWindow(QtGui.QMainWindow):
 
     def screensaverTimeout(self):
         if self.card is None:
-            self.screensaver.show()
+            self.screensaverWindow.show()
 
     def interactionTimeout(self):
+        if self.card is not None and self.user is not None:
+            return
+
         for i in self.buttons:
             self.buttons[i].setChecked(False)
+        self.tosWindow.close()
+        self.codeWindow.close()
+        self.adminWindow.close()
 
     def displayUpdate(self):
         cardtext = "Bitte Karte anlegen ..."
@@ -337,6 +346,11 @@ class MainWindow(QtGui.QMainWindow):
         self.screensaverTimer.start()
 
     def pushAdminClicked(self):
+        self.resetInteractionTimeout()
+        if self.user is not None and self.user.admin is True:
+            self.screensaverTimer.stop()
+            self.adminWindow.exec_()
+            self.screensaverTimer.start()
         return
 
     def onMessageLabelClicked(self, event):

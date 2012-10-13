@@ -4,9 +4,5 @@
 certificates/*
 resource/items/*.png
 rfid.dummy
-mainUi.py
-codeUi.py
-tosUi.py
-messageUi.py
-screensaverUi.py
+*Ui.py
 coffeesale.config

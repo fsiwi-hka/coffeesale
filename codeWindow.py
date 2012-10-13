@@ -15,7 +15,7 @@ EURO = QtGui.QApplication.translate("", "€", None, QtGui.QApplication.UnicodeU
 
 class CodeWindow(QtGui.QDialog):
     def __init__(self, messageWindow, codeCallback, parent=None):
-        QtGui.QDialog.__init__(self, parent)
+        QtGui.QDialog.__init__(self, parent, QtCore.Qt.Window)
 
         self.ui=Ui_CodeWindow()
         self.ui.setupUi(self)

@@ -106,7 +106,7 @@ class MainWindow(QtGui.QMainWindow):
         QtCore.QCoreApplication.processEvents()
 
         # Remove all buttons
-        for i in range(self.ui.buttonLayout.count()): 
+        for i in range(self.ui.dynamicButtonLayout.count()): 
             self.ui.buttonLayout.itemAt(i).widget().close()
 
         self.buttons = {}
@@ -119,14 +119,16 @@ class MainWindow(QtGui.QMainWindow):
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        
+
         items = self.client.getItems() 
+
+        rows = 1
 
         if items is None:
             items = []
 
         self.items = {} 
-        #self.items = resp.data['items']
+        
         for item in items:
             self.items[item.id] = item
 
@@ -152,7 +154,7 @@ class MainWindow(QtGui.QMainWindow):
                 button.setText(item.desc + " / " + str(item.price) + " Bits")
                 button.setEnabled(True)
 
-            self.ui.buttonLayout.addWidget(button)
+            self.ui.dynamicButtonLayout.addWidget(button, 0, item.id)
             button.clicked.connect(partial(self.pushItemClicked, item.id))
             self.buttons[item.id] = button
 
@@ -163,7 +165,7 @@ class MainWindow(QtGui.QMainWindow):
         self.chargeButton.setStyleSheet("image: url(resource/gold.png);")
         self.chargeButton.setObjectName("Aufladen")
         self.chargeButton.setText("Aufladen")
-        self.ui.buttonLayout.addWidget(self.chargeButton)
+        self.ui.dynamicButtonLayout.addWidget(self.chargeButton, 0, 1337, rows, 1)
         self.chargeButton.clicked.connect(self.pushChargeClicked)
  
         self.adminButton = QtGui.QPushButton(self.ui.centralwidget)
@@ -173,7 +175,7 @@ class MainWindow(QtGui.QMainWindow):
         self.adminButton.setObjectName("Admin")
         self.adminButton.setText("Admin")
         self.adminButton.setVisible(False)
-        self.ui.buttonLayout.addWidget(self.adminButton)
+        self.ui.dynamicButtonLayout.addWidget(self.adminButton, 0, 1338, rows, 1)
         self.adminButton.clicked.connect(self.pushAdminClicked)
          
         print "done"
@@ -202,6 +204,7 @@ class MainWindow(QtGui.QMainWindow):
 
             self.wallet = self.client.getWallet(self.card.mifareid, self.card.cardid)
 
+            self.user = None
             if self.wallet != None:
                 self.card.valid = True
                 self.user = self.client.getUser(self.card.mifareid, self.card.cardid)
@@ -303,7 +306,6 @@ class MainWindow(QtGui.QMainWindow):
         cardtext = "Bitte Karte anlegen ..."
         price = ""
        
-
         if self.adminButton is not None:
             self.adminButton.setVisible((self.user != None and self.user.admin == True))
         

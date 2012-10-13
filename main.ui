@@ -28,7 +28,7 @@ QLabel#message {
 	color: white;
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(52, 161, 224, 255), stop:1 rgba(36, 110, 153, 255));
 	border-radius: 1em;
-	padding: 1em;
+	padding: 0.5em;
 	font-size: 26px;
 	font-weight: bold;
 }
@@ -78,89 +78,7 @@ QPushButton:on, QToolButton:on {
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="buttonLayout">
-      <property name="leftMargin">
-       <number>5</number>
-      </property>
-      <property name="rightMargin">
-       <number>5</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="pushCoffee">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">image: url(resource/coffee.png);</string>
-        </property>
-        <property name="text">
-         <string>Kaffee / 5 Bits</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushClubMate">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">image: url(resource/mate.png);</string>
-        </property>
-        <property name="text">
-         <string>Club Mate / 15 Bits</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushCharge">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">image: url(resource/gold.png);</string>
-        </property>
-        <property name="text">
-         <string>Aufladen</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <layout class="QGridLayout" name="dynamicButtonLayout"/>
     </item>
     <item>
      <widget class="QLabel" name="message">
@@ -169,6 +87,12 @@ QPushButton:on, QToolButton:on {
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>70</height>
+       </size>
       </property>
       <property name="text">
        <string>Bitte Karte auflegen ...</string>

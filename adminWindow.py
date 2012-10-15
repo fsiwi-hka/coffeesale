@@ -10,6 +10,9 @@ from adminUi import Ui_AdminWindow
 # Admin Item Window
 from adminItemWindow import *
 
+# Admin Statistics Window
+from adminStatsWindow import *
+
 class AdminWindow(QtGui.QDialog):
     def __init__(self, parent=None):
         QtGui.QDialog.__init__(self, parent, QtCore.Qt.Window)
@@ -17,8 +20,10 @@ class AdminWindow(QtGui.QDialog):
         self.ui.setupUi(self)
         self.setModal(True)
         self.adminItemWindow = AdminItemWindow(self)
+        self.adminStatsWindow = AdminStatsWindow(self)
         self.ui.pushBack.clicked.connect(self.pushBack)
         self.ui.pushAdmin.clicked.connect(self.pushAdmin)
+        self.ui.pushStats.clicked.connect(self.pushStats)
 
     def show(self):
         QtGui.QDialog.show(self)
@@ -29,3 +34,6 @@ class AdminWindow(QtGui.QDialog):
 
     def pushAdmin(self):
         self.adminItemWindow.exec_()
+
+    def pushStats(self):
+        self.adminStatsWindow.exec_()

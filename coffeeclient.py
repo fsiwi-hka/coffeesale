@@ -170,6 +170,11 @@ class CoffeeClient(Singleton):
         if resp is None:
             return False
         return True
+    def getStatistics(self):
+        resp = self.request("getStatistics", self.mifareid, self.cardid)
+        if resp is None:
+            return None
+        return resp.data['statistics']
 
     def getRequest(self, url):
         return self.protocol.getRequest(url)

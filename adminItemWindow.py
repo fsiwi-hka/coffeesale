@@ -17,7 +17,6 @@ class AdminItemWindow(QtGui.QDialog):
         self.ui.setupUi(self)
         self.setModal(True)
         self.items = {}
-        self.rebuildItems()
         self.ui.pushApply.clicked.connect(self.pushApply)
         self.ui.pushClose.clicked.connect(self.pushClose)
 
@@ -26,8 +25,8 @@ class AdminItemWindow(QtGui.QDialog):
         self.setWindowState(QtCore.Qt.Fullscreen)
 
     def exec_(self):
-        QtGui.QDialog.exec_(self)
         self.rebuildItems()
+        QtGui.QDialog.exec_(self)
 
     def pushApply(self):
         for item in self.items:

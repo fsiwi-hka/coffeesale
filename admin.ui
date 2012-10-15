@@ -68,7 +68,7 @@ QPushButton:on, QToolButton:on {
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushStatistic">
+      <widget class="QPushButton" name="pushStats">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>

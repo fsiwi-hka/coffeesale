@@ -7,14 +7,18 @@ from PyQt4 import QtGui, QtCore
 # Compiled ui classes
 from adminUi import Ui_AdminWindow
 
+# Admin Item Window
+from adminItemWindow import *
+
 class AdminWindow(QtGui.QDialog):
     def __init__(self, parent=None):
         QtGui.QDialog.__init__(self, parent, QtCore.Qt.Window)
         self.ui=Ui_AdminWindow()
         self.ui.setupUi(self)
         self.setModal(True)
-
+        self.adminItemWindow = AdminItemWindow(self)
         self.ui.pushBack.clicked.connect(self.pushBack)
+        self.ui.pushAdmin.clicked.connect(self.pushAdmin)
 
     def show(self):
         QtGui.QDialog.show(self)
@@ -22,3 +26,6 @@ class AdminWindow(QtGui.QDialog):
 
     def pushBack(self):
         self.reject()
+
+    def pushAdmin(self):
+        self.adminItemWindow.exec_()

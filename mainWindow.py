@@ -11,23 +11,18 @@ from RFID import *
 # Compiled ui classes
 from mainUi import Ui_MainWindow
 
-# Code window
+# Windows
 from codeWindow import *
-
-# Message window
 from messageWindow import *
-
-# TOS Window
 from tosWindow import *
-
-# Screensaver Window
 from screensaverWindow import *
-
-# Admin Window
 from adminWindow import *
 
+# CoffeeClient
+from coffeeclient import *
+
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, client, cfg):
+    def __init__(self, cfg):
         QtGui.QMainWindow.__init__(self)
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
@@ -57,7 +52,7 @@ class MainWindow(QtGui.QMainWindow):
         self.rfid.start()
  
         # Business logic stuff
-        self.client = client
+        self.client = CoffeeClient()
         self.card = self.rfid.readCard()
         self.wallet = None
         self.user = None
@@ -88,13 +83,6 @@ class MainWindow(QtGui.QMainWindow):
         self.itemsTimer.setInterval(cfg.client.item_refresh)
         self.itemsTimer.start()
         
-        # Timer for rfid updates
-        self.rfidTimer = QtCore.QTimer()
-        QtCore.QObject.connect(self.rfidTimer, QtCore.SIGNAL("timeout()"), self.rfidUpdate)
-        #self.rfidUpdate()
-        #self.rfidTimer.setInterval(cfg.client.rfid_refresh)
-        #self.rfidTimer.start()
-
         # Click event for message label
         self.ui.message.mousePressEvent = self.onMessageLabelClicked
 
@@ -107,7 +95,7 @@ class MainWindow(QtGui.QMainWindow):
 
         # Remove all buttons
         for i in range(self.ui.dynamicButtonLayout.count()): 
-            self.ui.buttonLayout.itemAt(i).widget().close()
+            self.ui.dynamicButtonLayout.itemAt(i).widget().close()
 
         self.buttons = {}
         
@@ -137,9 +125,9 @@ class MainWindow(QtGui.QMainWindow):
             f.write(self.client.getRequest("resource/item/" + str(item.id)))
             f.close()
 
-            
             if item.enabled != True:
-                next
+                continue
+
             button = QtGui.QPushButton(self.ui.centralwidget)
             button.setSizePolicy(sizePolicy)
             button.setFont(font)
@@ -191,6 +179,7 @@ class MainWindow(QtGui.QMainWindow):
             self.card = None
             self.wallet = None
             self.user = None
+            CoffeeClient().resetIds()
             self.messageWindow.close()
             self.displayUpdate()
             return
@@ -202,12 +191,13 @@ class MainWindow(QtGui.QMainWindow):
             self.lastcard = self.card
             self.card = newcard
 
-            self.wallet = self.client.getWallet(self.card.mifareid, self.card.cardid)
+            CoffeeClient().setIds(self.card.mifareid, self.card.cardid)
+            self.wallet = CoffeeClient().getWallet()
 
             self.user = None
             if self.wallet != None:
                 self.card.valid = True
-                self.user = self.client.getUser(self.card.mifareid, self.card.cardid)
+                self.user = CoffeeClient().getUser()
 
             self.lastcard = self.card
         
@@ -227,13 +217,13 @@ class MainWindow(QtGui.QMainWindow):
             if self.wallet is not None:
                 oldBalance = self.wallet.balance
           
-            buyReq = self.client.buyItem(item, self.card.mifareid, self.card.cardid)
+            buyReq = CoffeeClient().buyItem(item)
 
             if buyReq == False:
                 self.messageWindow.show("Nicht genug Bits.", 3)
                 return
            
-            self.wallet = self.client.getWallet(self.card.mifareid, self.card.cardid)
+            self.wallet = CoffeeClient().getWallet()
 
             message = str(self.items[item].desc) + " gekauft\n\n"
             message += "Altes Guthaben: " + str(oldBalance) + " Bits\n"
@@ -255,13 +245,13 @@ class MainWindow(QtGui.QMainWindow):
         if self.wallet is not None:
             oldBalance = self.wallet.balance
 
-        redeemResp = self.client.redeemToken(code, self.card.mifareid, self.card.cardid)
+        redeemResp = CoffeeClient().redeemToken(code)
 
         if redeemResp == False:
             self.codeWindow.ui.message.setText("Token ist falsch.")
             return
        
-        self.wallet = self.client.getWallet(self.card.mifareid, self.card.cardid)
+        self.wallet = CoffeeClient().getWallet()
         self.codeWindow.accept()
 
         # Plays beep
@@ -348,11 +338,13 @@ class MainWindow(QtGui.QMainWindow):
         self.screensaverTimer.start()
 
     def pushAdminClicked(self):
-        self.resetInteractionTimeout()
         if self.user is not None and self.user.admin is True:
             self.screensaverTimer.stop()
+            self.interactionTimer.stop()
             self.adminWindow.exec_()
+            self.interactionTimer.start()
             self.screensaverTimer.start()
+            self.rebuildItems()
         return
 
     def onMessageLabelClicked(self, event):

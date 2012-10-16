@@ -180,13 +180,14 @@ class MainWindow(QtGui.QMainWindow):
             self.wallet = None
             self.user = None
             CoffeeClient().resetIds()
-            self.messageWindow.close()
+            self.closeAllWindows()
             self.displayUpdate()
             return
 
         if not newcard.isSame(self.lastcard):
-            self.screensaverWindow.close()
-            #self.resetInteractionTimeout()
+            self.resetScreensaverTimeout()
+            self.resetInteractionTimeout()
+            self.closeAllWindows()
 
             self.lastcard = self.card
             self.card = newcard
@@ -271,6 +272,7 @@ class MainWindow(QtGui.QMainWindow):
         self.rfidUpdate()
 
     def resetScreensaverTimeout(self):
+        self.screensaverWindow.close()
         self.screensaverTimer.stop()
         self.screensaverTimer.start()
 
@@ -289,9 +291,14 @@ class MainWindow(QtGui.QMainWindow):
 
         for i in self.buttons:
             self.buttons[i].setChecked(False)
+        self.closeAllWindows()
+
+    def closeAllWindows(self):
         self.tosWindow.close()
         self.codeWindow.close()
         self.adminWindow.close()
+        self.tosWindow.close()
+        self.messageWindow.close()
 
     def displayUpdate(self):
         cardtext = "Bitte Karte anlegen ..."
@@ -356,7 +363,7 @@ class MainWindow(QtGui.QMainWindow):
             if self.card is not None:
                 if self.card.ccBalance != None or False == True:
                     s = "CampusCard\n\nAktuelles Guthaben: %0.2f Euro\nLetztes Guthaben: %0.2f Euro" % (self.card.ccBalance, self.card.ccLastBalance)
-                    self.messageWindow.show(s, 2)
+                    self.messageWindow.show(s, 5)
         except:
             pass
 

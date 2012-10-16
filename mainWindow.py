@@ -280,6 +280,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def screensaverTimeout(self):
         if self.card is None:
+            self.interactionTimeout()
             self.screensaverWindow.show()
 
     def interactionTimeout(self):
@@ -339,11 +340,13 @@ class MainWindow(QtGui.QMainWindow):
 
     def pushAdminClicked(self):
         if self.user is not None and self.user.admin is True:
+            self.itemsTimer.stop()
             self.screensaverTimer.stop()
             self.interactionTimer.stop()
             self.adminWindow.exec_()
             self.interactionTimer.start()
             self.screensaverTimer.start()
+            self.itemsTimer.start()
             self.rebuildItems()
         return
 

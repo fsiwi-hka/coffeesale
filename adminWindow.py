@@ -29,11 +29,20 @@ class AdminWindow(QtGui.QDialog):
         QtGui.QDialog.show(self)
         self.setWindowState(QtCore.Qt.Fullscreen)
 
+    def close(self):
+        self.adminItemWindow.close()
+        self.adminStatsWindow.close()
+        QtGui.QDialog.close(self)
+
     def pushBack(self):
         self.reject()
 
     def pushAdmin(self):
         self.adminItemWindow.exec_()
+        self.raise_()
+        self.activateWindow()
 
     def pushStats(self):
         self.adminStatsWindow.exec_()
+        self.raise_()
+        self.activateWindow()

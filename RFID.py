@@ -51,9 +51,11 @@ class RFIDWorkerBase(QThread):
         None
 
 class RFIDWorker(RFIDWorkerBase):
+    card = None
     def __init__(self, key, parent=None):
         RFIDWorkerBase.__init__(self, key, parent)
         self.key = key
+        self.card = None
 
         # RFIDIOt library
         global RFIDIOtconfig
@@ -66,6 +68,9 @@ class RFIDWorker(RFIDWorkerBase):
             time.sleep(0.25)
     
     def readBlock(self, block, key):
+        if self.card is None:
+            return None
+
         self.card.select()
         if self.card.login(block/4, 'AA', key):
             self.card.readMIFAREblock(block)
@@ -112,7 +117,8 @@ class RFIDWorker(RFIDWorkerBase):
             if not self.card.select():
                 return None
         except:
-            self.card.ser.close()
+            if self.card is not None:
+                self.card.ser.close()
             self.card = None
             return None
 
@@ -127,7 +133,8 @@ class RFIDWorker(RFIDWorkerBase):
             else:
                 return None
         except:
-            self.card.ser.close()
+            if self.card is not None:
+                self.card.ser.close()
             self.card = None
             return None
 

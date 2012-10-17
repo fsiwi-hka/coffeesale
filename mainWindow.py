@@ -78,7 +78,7 @@ class MainWindow(QtGui.QMainWindow):
  
         # Timer for item updates
         self.itemsTimer = QtCore.QTimer()
-        QtCore.QObject.connect(self.itemsTimer, QtCore.SIGNAL("timeout()"), self.rebuildItems)
+        QtCore.QObject.connect(self.itemsTimer, QtCore.SIGNAL("timeout()"), self.rebuildItemTimeout)
         self.rebuildItems()
         self.itemsTimer.setInterval(cfg.client.item_refresh)
         self.itemsTimer.start()
@@ -86,9 +86,12 @@ class MainWindow(QtGui.QMainWindow):
         # Click event for message label
         self.ui.message.mousePressEvent = self.onMessageLabelClicked
 
+    def rebuildItemTimeout(self):
+        if self.card is None:
+            self.rebuildItems()
+
     def rebuildItems(self):
-        self.messageWindow.show("Just a moment...", 999999)
-        self.ui.message.setText("Rebuilding items")
+        self.messageWindow.show("Items werden geupdated ...", 999999)
         print "Rebuilding items...", 
 
         QtCore.QCoreApplication.processEvents()
@@ -145,6 +148,7 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.dynamicButtonLayout.addWidget(button, 0, item.id)
             button.clicked.connect(partial(self.pushItemClicked, item.id))
             self.buttons[item.id] = button
+            QtCore.QCoreApplication.processEvents()
 
         # Charge button...
         self.chargeButton = QtGui.QPushButton(self.ui.centralwidget)
@@ -167,7 +171,8 @@ class MainWindow(QtGui.QMainWindow):
         self.adminButton.clicked.connect(self.pushAdminClicked)
          
         print "done"
-        self.messageWindow.close()
+        QtCore.QCoreApplication.processEvents()
+        self.messageWindow.show("Items werden geupdated ...", 1)
         self.displayUpdate()
 
     def rfidUpdate(self, newcard):

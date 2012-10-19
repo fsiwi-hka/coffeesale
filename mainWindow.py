@@ -226,7 +226,7 @@ class MainWindow(QtGui.QMainWindow):
             buyReq = CoffeeClient().buyItem(item)
 
             if buyReq == False:
-                self.messageWindow.show("Nicht genug Bits.", 3)
+                self.messageWindow.show("Nicht genug Bits.", 4)
                 return
            
             self.wallet = CoffeeClient().getWallet()

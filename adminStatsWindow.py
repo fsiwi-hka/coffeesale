@@ -35,17 +35,26 @@ class AdminStatsWindow(QtGui.QDialog):
        
         items = CoffeeClient().getItems()
         stats = CoffeeClient().getStatistics()
-        for item in items:
-            stat = stats[str(item.id)]
-            
-            todayLabel = QtGui.QLabel()
-            todayLabel.setText(str(stat['day_count']))
-            self.ui.todayLayout.addRow(item.desc, todayLabel)
+      
+        columns = {'day': self.ui.todayLayout, 'week': self.ui.weekLayout, 'total': self.ui.totalLayout}
+        
+        for key, layout in columns.items():
+            revenue = 0
+            for item in items:   
+                revenue += stats[key]['items'][str(item.id)]['revenue']
+                label = QtGui.QLabel()
+                label.setText(str(stats[key]['items'][str(item.id)]['count']))
+                layout.addRow(item.desc + ":", label)
 
-            weekLabel = QtGui.QLabel()
-            weekLabel.setText(str(stat['week_count']))
-            self.ui.weekLayout.addRow(item.desc, weekLabel)
+            rlabel = QtGui.QLabel()
+            rlabel.setText(str(revenue))
+            layout.addRow("Revenue:", rlabel)
+ 
+            tlabel = QtGui.QLabel()
+            tlabel.setText(str(stats[key]['used_tokens']))
+            layout.addRow("Redeemed tokens:", tlabel)
+            tvlabel = QtGui.QLabel()
+            tvlabel.setText(str(stats[key]['used_tokens_value']))
+            layout.addRow("Token value:", tvlabel)
+        
 
-            totalLabel = QtGui.QLabel()
-            totalLabel.setText(str(stat['total_count']))
-            self.ui.totalLayout.addRow(item.desc, totalLabel)

@@ -52,9 +52,9 @@ class AdminStatsWindow(QtGui.QDialog):
  
             tlabel = QtGui.QLabel()
             tlabel.setText(str(stats[key]['used_tokens']))
-            layout.addRow("Redeemed tokens:", tlabel)
+            layout.addRow("Tokens:", tlabel)
             tvlabel = QtGui.QLabel()
             tvlabel.setText(str(stats[key]['used_tokens_value']))
-            layout.addRow("Token value:", tvlabel)
+            layout.addRow("Value:", tvlabel)
         
 

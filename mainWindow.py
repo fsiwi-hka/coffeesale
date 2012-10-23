@@ -98,6 +98,7 @@ class MainWindow(QtGui.QMainWindow):
 
         # Remove all buttons
         for i in range(self.ui.dynamicButtonLayout.count()): 
+            self.ui.dynamicButtonLayout.itemAt(i).widget().delete_later()
             self.ui.dynamicButtonLayout.itemAt(i).widget().close()
 
         self.buttons = {}

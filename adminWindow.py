@@ -44,6 +44,7 @@ class AdminWindow(QtGui.QDialog):
 
     def pushStats(self):
         # Workaround for Qt bug in AdminStatsWindow - QFormLayouts can not be reset properly
+        self.adminStatsWindow.delete_later()
         self.adminStatsWindow.close()
         self.adminStatsWindow = AdminStatsWindow(self)
         self.adminStatsWindow.exec_()

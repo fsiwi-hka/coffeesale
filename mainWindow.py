@@ -350,7 +350,6 @@ class MainWindow(QtGui.QMainWindow):
             self.codeWindow.exec_()
         self.displayUpdate()
         self.screensaverTimer.start()
-        self.messageWindow.show("Wird geladen ...", 0.5)
 
     def pushAdminClicked(self):
         if self.user is not None and self.user.admin is True:

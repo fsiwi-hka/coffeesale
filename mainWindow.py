@@ -112,7 +112,7 @@ class MainWindow(QtGui.QMainWindow):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
 
-        items = self.client.getItems() 
+        items = sorted(self.client.getItems(), cmp=Item_Sort)
 
         rows = 1
 
@@ -120,7 +120,8 @@ class MainWindow(QtGui.QMainWindow):
             items = []
 
         self.items = {} 
-        
+
+        orderIndex = 0
         for item in items:
             self.items[item.id] = item
 
@@ -146,7 +147,8 @@ class MainWindow(QtGui.QMainWindow):
                 button.setText(item.desc + " / " + str(item.price) + " Bits")
                 button.setEnabled(True)
 
-            self.ui.dynamicButtonLayout.addWidget(button, 0, item.id)
+            self.ui.dynamicButtonLayout.addWidget(button, 0, orderIndex)
+            orderIndex += 1
             button.clicked.connect(partial(self.pushItemClicked, item.id))
             self.buttons[item.id] = button
             QtCore.QCoreApplication.processEvents()

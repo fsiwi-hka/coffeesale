@@ -89,6 +89,9 @@ class User(object):
         self.username = username
         self.admin = admin
 
+def Item_Sort(x, y):
+    return y.weight - x.weight
+
 class Item(object):
     id = 0
     price = 0
@@ -96,14 +99,16 @@ class Item(object):
     image = ""
     enabled = True
     sold_out = False
+    weight = 0
 
-    def __init__(self, id, price, desc, image, enabled, sold_out):
+    def __init__(self, id, price, desc, image, enabled, sold_out, weight):
         self.id = id
         self.price = price
         self.desc = desc
         self.image = image
         self.enabled = enabled
         self.sold_out = sold_out
+        self.weight = weight
 
 class CoffeeClient(Singleton):
     protocol = None
@@ -138,7 +143,7 @@ class CoffeeClient(Singleton):
             return None
         items = []
         for item in resp.data['items']:
-            items.append(Item(item['id'], item['price'], item['desc'], item['image'], item['enabled'], item['sold_out']))
+            items.append(Item(item['id'], item['price'], item['desc'], item['image'], item['enabled'], item['sold_out'], item['weight']))
         return items
 
     def getWallet(self):

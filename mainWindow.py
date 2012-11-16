@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys, time, os, json, urllib
+import sys, time, os, json, urllib, math
 from functools import partial
 from PyQt4 import QtGui, QtCore
 import pygame
@@ -114,14 +114,25 @@ class MainWindow(QtGui.QMainWindow):
 
         items = sorted(self.client.getItems(), cmp=Item_Sort)
 
-        rows = 1
+        noItems = 0
+
+        for item in items:
+            if item.enabled == True:
+                noItems += 1
+
+        # Three items per row
+        noRows = math.ceil(float(noItems) / 3.0)
+
+        print noRows
+        print noItems
 
         if items is None:
             items = []
 
         self.items = {} 
 
-        orderIndex = 0
+        columnIndex = 0
+        rowIndex = 0
         for item in items:
             self.items[item.id] = item
 
@@ -147,8 +158,13 @@ class MainWindow(QtGui.QMainWindow):
                 button.setText(item.desc + " / " + str(item.price) + " Bits")
                 button.setEnabled(True)
 
-            self.ui.dynamicButtonLayout.addWidget(button, 0, orderIndex)
-            orderIndex += 1
+            self.ui.dynamicButtonLayout.addWidget(button, rowIndex, columnIndex)
+            columnIndex += 1
+
+            if columnIndex >= noItems / noRows:
+                columnIndex = 0
+                rowIndex += 1
+
             button.clicked.connect(partial(self.pushItemClicked, item.id))
             self.buttons[item.id] = button
             QtCore.QCoreApplication.processEvents()
@@ -160,7 +176,7 @@ class MainWindow(QtGui.QMainWindow):
         self.chargeButton.setStyleSheet("image: url(resource/gold.png);")
         self.chargeButton.setObjectName("Aufladen")
         self.chargeButton.setText("Aufladen")
-        self.ui.dynamicButtonLayout.addWidget(self.chargeButton, 0, 1337, rows, 1)
+        self.ui.dynamicButtonLayout.addWidget(self.chargeButton, 0, 1337, noRows, 1)
         self.chargeButton.clicked.connect(self.pushChargeClicked)
  
         self.adminButton = QtGui.QPushButton(self.ui.centralwidget)
@@ -170,7 +186,7 @@ class MainWindow(QtGui.QMainWindow):
         self.adminButton.setObjectName("Admin")
         self.adminButton.setText("Admin")
         self.adminButton.setVisible(False)
-        self.ui.dynamicButtonLayout.addWidget(self.adminButton, 0, 1338, rows, 1)
+        self.ui.dynamicButtonLayout.addWidget(self.adminButton, 0, 1338, noRows, 1)
         self.adminButton.clicked.connect(self.pushAdminClicked)
          
         print "done"

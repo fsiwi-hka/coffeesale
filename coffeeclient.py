@@ -90,7 +90,9 @@ class User(object):
         self.admin = admin
 
 def Item_Sort(x, y):
-    return y.weight - x.weight
+    if x is None or y is None or x.weight is None or y.weight is None:
+        return 0
+    return int(y.weight) - int(x.weight)
 
 class Item(object):
     id = 0

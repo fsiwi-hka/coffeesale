@@ -34,8 +34,6 @@ class MainWindow(QtGui.QMainWindow):
 
         # Message Window
         self.messageWindow = MessageWindow(self)
-        self.messageWindow.show("Just a moment...", 999999)
-        QtCore.QCoreApplication.processEvents()
         
         # Windows
         self.codeWindow = CodeWindow(self.messageWindow, self.redeemCode, self)
@@ -61,9 +59,6 @@ class MainWindow(QtGui.QMainWindow):
         self.buttons = {}
         self.items = {}
 
-        # Close message window, we are done
-        self.messageWindow.close()
- 
         # Timer for screensaver timeouts
         self.screensaverTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.screensaverTimer, QtCore.SIGNAL("timeout()"), self.screensaverTimeout)
@@ -91,9 +86,9 @@ class MainWindow(QtGui.QMainWindow):
             self.rebuildItems()
 
     def rebuildItems(self):
-        self.messageWindow.show("Items werden geupdated ...", 999999)
-        print "Rebuilding items...", 
-
+        QtCore.QCoreApplication.processEvents()
+        self.messageWindow.show("Items werden geupdated ...", 60)
+        print "Rebuilding items..." 
         QtCore.QCoreApplication.processEvents()
 
         # Remove all buttons
@@ -114,32 +109,31 @@ class MainWindow(QtGui.QMainWindow):
 
         items = sorted(self.client.getItems(), cmp=Item_Sort)
 
-        noItems = 0
-
-        for item in items:
-            if item.enabled == True:
-                noItems += 1
-
-        # Three items per row
-        noRows = math.ceil(float(noItems) / 3.0)
-
-        print noRows
-        print noItems
-
         if items is None:
             items = []
-
         self.items = {} 
 
-        columnIndex = 0
-        rowIndex = 0
+        itemPerRow = 2
+        itemIndex = 0
         for item in items:
             self.items[item.id] = item
 
+            print "Image for '" + str(item.id) + "...", 
+            serverLastModified = float(self.client.getRequest("resource/item/lastModified/" + str(item.id)))
+            clientLastModified = 0
+            try:
+                clientLastModified = os.path.getctime("resource/items/" + str(item.id) + ".png")
+            except:
+                pass
+
             # Download the item icon
-            f = open("resource/items/" + str(item.id) + ".png", "w+")
-            f.write(self.client.getRequest("resource/item/" + str(item.id)))
-            f.close()
+            if serverLastModified > clientLastModified:
+                f = open("resource/items/" + str(item.id) + ".png", "w+")
+                f.write(self.client.getRequest("resource/item/image/" + str(item.id)))
+                f.close()
+                print "downloaded."
+            else:
+                print "cached."
 
             if item.enabled != True:
                 continue
@@ -158,16 +152,12 @@ class MainWindow(QtGui.QMainWindow):
                 button.setText(item.desc + " / " + str(item.price) + " Bits")
                 button.setEnabled(True)
 
-            self.ui.dynamicButtonLayout.addWidget(button, rowIndex, columnIndex)
-            columnIndex += 1
-
-            if columnIndex >= noItems / noRows:
-                columnIndex = 0
-                rowIndex += 1
+            self.ui.dynamicButtonLayout.addWidget(button, itemIndex / itemPerRow, itemIndex % itemPerRow)
+            itemIndex += 1
 
             button.clicked.connect(partial(self.pushItemClicked, item.id))
             self.buttons[item.id] = button
-            QtCore.QCoreApplication.processEvents()
+#            QtCore.QCoreApplication.processEvents()
 
         # Charge button...
         self.chargeButton = QtGui.QPushButton(self.ui.centralwidget)
@@ -176,7 +166,7 @@ class MainWindow(QtGui.QMainWindow):
         self.chargeButton.setStyleSheet("image: url(resource/gold.png);")
         self.chargeButton.setObjectName("Aufladen")
         self.chargeButton.setText("Aufladen")
-        self.ui.dynamicButtonLayout.addWidget(self.chargeButton, 0, 1337, noRows, 1)
+        self.ui.dynamicButtonLayout.addWidget(self.chargeButton, 0, 1337, itemIndex / itemPerRow, 1)
         self.chargeButton.clicked.connect(self.pushChargeClicked)
  
         self.adminButton = QtGui.QPushButton(self.ui.centralwidget)
@@ -186,7 +176,7 @@ class MainWindow(QtGui.QMainWindow):
         self.adminButton.setObjectName("Admin")
         self.adminButton.setText("Admin")
         self.adminButton.setVisible(False)
-        self.ui.dynamicButtonLayout.addWidget(self.adminButton, 0, 1338, noRows, 1)
+        self.ui.dynamicButtonLayout.addWidget(self.adminButton, 0, 1338, itemIndex / itemPerRow, 1)
         self.adminButton.clicked.connect(self.pushAdminClicked)
          
         print "done"

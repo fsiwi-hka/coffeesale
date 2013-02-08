@@ -65,7 +65,7 @@ class RFIDWorker(RFIDWorkerBase):
         while True:
             card = self.readCard()
             self.emit(SIGNAL("cardRead(PyQt_PyObject)"), card)
-            time.sleep(0.25)
+            time.sleep(0.05)
     
     def readBlock(self, block, key):
         if self.card is None:

@@ -6,3 +6,4 @@ resource/items/*.png
 rfid.dummy
 *Ui.py
 coffeesale.config
+coffeesale.sublime-workspace

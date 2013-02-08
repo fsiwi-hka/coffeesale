@@ -104,5 +104,3 @@ class CodeWindow(QtGui.QDialog):
         self.pushNo(8)
     def pushNo9(self):
         self.pushNo(9)
-
-

@@ -107,15 +107,13 @@ class MainWindow(QtGui.QMainWindow):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
 
-        items = sorted(self.client.getItems(), cmp=Item_Sort)
-
-        if items is None:
-            items = []
+        # Reset item storage
         self.items = {} 
 
-        itemPerRow = 2
-        itemIndex = 0
-        for item in items:
+        allItems = sorted(self.client.getItems(), cmp=Item_Sort)
+        enabledItems = []
+        # Download all pictures, build enabledItems
+        for item in allItems:
             self.items[item.id] = item
 
             print "Image for '" + str(item.id) + "...", 
@@ -135,9 +133,12 @@ class MainWindow(QtGui.QMainWindow):
             else:
                 print "cached."
 
-            if item.enabled != True:
-                continue
+            if item.enabled:
+                enabledItems.append(item)
 
+        itemPerColumn = 2
+        itemIndex = 0
+        for item in enabledItems:
             button = QtGui.QPushButton(self.ui.centralwidget)
             button.setSizePolicy(sizePolicy)
             button.setFont(font)
@@ -152,12 +153,15 @@ class MainWindow(QtGui.QMainWindow):
                 button.setText(item.desc + " / " + str(item.price) + " Bits")
                 button.setEnabled(True)
 
-            self.ui.dynamicButtonLayout.addWidget(button, itemIndex / itemPerRow, itemIndex % itemPerRow)
+            if itemIndex+1 == len(enabledItems) and len(enabledItems) % 2 != 0:
+                self.ui.dynamicButtonLayout.addWidget(button, itemIndex % itemPerColumn, itemIndex / itemPerColumn, 2, 1)
+            else:
+                self.ui.dynamicButtonLayout.addWidget(button, itemIndex % itemPerColumn, itemIndex / itemPerColumn)
+
             itemIndex += 1
 
             button.clicked.connect(partial(self.pushItemClicked, item.id))
             self.buttons[item.id] = button
-#            QtCore.QCoreApplication.processEvents()
 
         # Charge button...
         self.chargeButton = QtGui.QPushButton(self.ui.centralwidget)
@@ -166,7 +170,7 @@ class MainWindow(QtGui.QMainWindow):
         self.chargeButton.setStyleSheet("image: url(resource/gold.png);")
         self.chargeButton.setObjectName("Aufladen")
         self.chargeButton.setText("Aufladen")
-        self.ui.dynamicButtonLayout.addWidget(self.chargeButton, 0, 1337, itemIndex / itemPerRow, 1)
+        self.ui.dynamicButtonLayout.addWidget(self.chargeButton, 0, 1337, self.ui.dynamicButtonLayout.rowCount(), 1)
         self.chargeButton.clicked.connect(self.pushChargeClicked)
  
         self.adminButton = QtGui.QPushButton(self.ui.centralwidget)
@@ -176,7 +180,7 @@ class MainWindow(QtGui.QMainWindow):
         self.adminButton.setObjectName("Admin")
         self.adminButton.setText("Admin")
         self.adminButton.setVisible(False)
-        self.ui.dynamicButtonLayout.addWidget(self.adminButton, 0, 1338, itemIndex / itemPerRow, 1)
+        self.ui.dynamicButtonLayout.addWidget(self.adminButton, 0, 1338, self.ui.dynamicButtonLayout.rowCount(), 1)
         self.adminButton.clicked.connect(self.pushAdminClicked)
          
         print "done"

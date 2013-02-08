@@ -92,7 +92,7 @@ class User(object):
 def Item_Sort(x, y):
     if x is None or y is None or x.weight is None or y.weight is None:
         return 0
-    return int(y.weight) - int(x.weight)
+    return int(x.weight) - int(y.weight)
 
 class Item(object):
     id = 0

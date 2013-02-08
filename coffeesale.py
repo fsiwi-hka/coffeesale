@@ -3,6 +3,7 @@
 
 import sys, time, os
 from PyQt4 import QtGui, QtCore
+sys.path.insert(0, "Ui/")
 sys.path.insert(0, "RFIDIOt/")
 sys.path.insert(0, "thirdparty/")
 sys.path.insert(0, "coffeeprotocol/")

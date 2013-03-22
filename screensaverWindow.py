@@ -19,20 +19,17 @@ class ScreensaverWindow(QtGui.QDialog):
 
         self.updateTimer = QtCore.QTimer()
         QtCore.QObject.connect(self.updateTimer, QtCore.SIGNAL("timeout()"), self.updateMensa)
-        self.updateTimer.start(30000)
+        self.updateTimer.start(60000)
 
         self.setModal(True)
         self.ui.frame.setFrameShadow(QtGui.QFrame.Plain)
         self.updateMensa()
 
     def show(self):
-        if self.isVisible():
-            return
         self.setWindowState(QtCore.Qt.WindowFullScreen)
         self.setModal(True)
         self.updateMensa()
         self.ui.frame.resize(self.ui.frame.sizeHint())
-        self.shuffle()
         QtGui.QDialog.show(self)
 
         # EVIL HACK FOR XMONAD/X11/XORG
@@ -40,6 +37,9 @@ class ScreensaverWindow(QtGui.QDialog):
         r = desk.screenGeometry()
         offset = 4
         self.setGeometry(r.left()-offset, r.top()-offset, r.width()+offset*2, r.height()+offset*2)
+
+        if not self.isVisible():
+            self.shuffle()
 
     def updateMensa(self):
                

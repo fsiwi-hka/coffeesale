@@ -70,6 +70,12 @@ QLabel#message {
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QLabel" name="mensaLabel">
+      <property name="maximumSize">
+       <size>
+        <width>550</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="palette">
        <palette>
         <active>
@@ -487,7 +493,7 @@ QLabel#message {
       </property>
       <property name="font">
        <font>
-        <pointsize>12</pointsize>
+        <pointsize>8</pointsize>
        </font>
       </property>
       <property name="text">

@@ -267,6 +267,9 @@ class MainWindow(QtGui.QMainWindow):
         redeemResp = CoffeeClient().redeemToken(code)
 
         if redeemResp == False:
+            # Plays beep
+            pygame.mixer.music.load("resource/zonk.wav")
+            pygame.mixer.music.play()
             self.codeWindow.ui.message.setText("Token ist falsch.")
             return
        

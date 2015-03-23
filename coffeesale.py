@@ -28,7 +28,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
 
     # Protocol
-    protocol = ClientProtocol(cfg.client.server_url, cfg.client.server_pub, cfg.client.private_key)
+    protocol = ClientProtocol(cfg.client.server_url, cfg.client.server_cert, cfg.client.private_key)
 
     # CoffeeClient
     client = CoffeeClient()

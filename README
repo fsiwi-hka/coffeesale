@@ -5,3 +5,6 @@ pqqt4-dev-tools
 python-m2crypto
 python-crypto
 python-pygame
+
+Init:
+run rebuildUI.sh

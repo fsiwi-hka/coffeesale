@@ -9,11 +9,12 @@ from datetime import *
 class mensaplan:
     def __init__(self):
         self.json_response = ""
-        req = urllib2.Request("http://www.home.hs-karlsruhe.de/~hoda1012/mensa/canteen.json")
+        req = urllib2.Request("http://www.home.hs-karlsruhe.de/~bufe1015/mensa/canteen.json")
         try:
             handle = urllib2.urlopen(req)
             self.json_response = json.loads(handle.read())
         except IOError, e:
+            self.json_response = {}
             pass
 
     def meal(self, mensa, line, date = date.today()):

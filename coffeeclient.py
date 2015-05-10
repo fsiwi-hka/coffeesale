@@ -7,6 +7,10 @@ from coffeeprotocol import *
 # HTTPS Request
 import httpsclient
 
+# modules for Fak-Server-Updates
+import json
+import requests
+
 # Message window
 from messageWindow import *
 
@@ -164,6 +168,22 @@ class CoffeeClient(Singleton):
         resp = self.request("updateItem", self.mifareid, self.cardid, {'item': itemid, 'enabled': enabled, 'sold_out': sold_out})
         if resp is None:
             return False
+        resp = self.request("getItemById", self.mifareid, self.cardid, {'itemid': itemid})
+        if resp is None:
+            return None
+        else:
+            url = "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/keyvaluestore/public/value/studentcouncil/Stock/%s" % resp.data['desc']
+            headers = {'authorization' : 'Basic c3R1ZGVudGNvdW5jaWw6a0h8ZG5YLERZYU85UF5QRkdCNSM='}
+            r = requests.get(url, headers=headers)
+            headers = {'content-type' : 'application/json', 'authorization' : 'Basic c3R1ZGVudGNvdW5jaWw6a0h8ZG5YLERZYU85UF5QRkdCNSM='}
+            jsonData = r.json()
+            url = "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/keyvaluestore/public/value/studentcouncil/Stock/"
+        if not enabled or sold_out:
+            jsonData['value'] = 0
+        else: 
+            jsonData['value'] = 1
+        r = requests.post(url, data = json.dumps(jsonData), headers=headers)
+
         return True
 
     def buyItem(self, item):
@@ -177,6 +197,7 @@ class CoffeeClient(Singleton):
         if resp is None:
             return False
         return True
+
     def getStatistics(self):
         resp = self.request("getStatistics", self.mifareid, self.cardid)
         if resp is None:

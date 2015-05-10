@@ -367,7 +367,7 @@ class MainWindow(QtGui.QMainWindow):
         self.screensaverTimer.start()
 
     def pushAdminClicked(self):
-        if self.user is not None and self.user.admin is True:
+        if (self.user is not None and self.user.admin is True):
             self.itemsTimer.stop()
             self.screensaverTimer.stop()
             self.interactionTimer.stop()
